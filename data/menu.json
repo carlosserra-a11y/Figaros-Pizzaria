@@ -1,0 +1,2573 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-06T13:21:53.886Z",
+  "store": {
+    "name": "Figaro's Pizzaria",
+    "tagline": "Pizzaria e Restaurante em Palhoça, SC",
+    "whatsapp": "5548933410102",
+    "phone": "(48) 93341-0102",
+    "email": "",
+    "address": "Av. Elza Lucchi, 1277 – Ponte do Imaruim, Palhoça – SC, 88130-600",
+    "mapsQuery": "Figaro's Pizzaria, Av. Elza Lucchi, 1277 - Palhoça, SC, 88130-600",
+    "instagram": "",
+    "facebook": "",
+    "hours": [
+      {
+        "day": 0,
+        "open": "18:30",
+        "close": "23:00",
+        "closed": false
+      },
+      {
+        "day": 1,
+        "open": "18:30",
+        "close": "23:00",
+        "closed": false
+      },
+      {
+        "day": 2,
+        "open": "18:30",
+        "close": "23:00",
+        "closed": false
+      },
+      {
+        "day": 3,
+        "open": "18:30",
+        "close": "23:00",
+        "closed": false
+      },
+      {
+        "day": 4,
+        "open": "18:30",
+        "close": "23:00",
+        "closed": false
+      },
+      {
+        "day": 5,
+        "open": "18:30",
+        "close": "23:00",
+        "closed": false
+      },
+      {
+        "day": 6,
+        "open": "18:30",
+        "close": "23:00",
+        "closed": false
+      }
+    ],
+    "lunchInfo": "Almoço com buffet: todos os dias, 11h às 14h30",
+    "forceStatus": "auto",
+    "deliveryEnabled": true,
+    "pickupEnabled": true,
+    "deliveryFee": 8.9,
+    "deliveryAreas": [],
+    "minOrder": 35,
+    "pricingRule": "average",
+    "etaDelivery": "",
+    "etaPickup": "",
+    "announcement": "",
+    "rating": 4.5,
+    "ratingCount": "3.000",
+    "payments": [
+      "PIX",
+      "Cartão de crédito",
+      "Cartão de débito",
+      "Dinheiro"
+    ]
+  },
+  "categories": [
+    {
+      "productId": "pizza-salgada",
+      "active": true,
+      "sort": 0,
+      "id": "pizzas-salgadas",
+      "name": "Pizzas Salgadas",
+      "icon": "🍕",
+      "description": "57 sabores. Escolha até 3 sabores na Gigante — borda de requeijão e refri inclusos."
+    },
+    {
+      "productId": null,
+      "active": true,
+      "sort": 1,
+      "id": "combos",
+      "name": "Combos",
+      "icon": "🎉",
+      "description": "Pizza salgada + doce + refri por um preço especial."
+    },
+    {
+      "productId": "pizza-doce",
+      "active": true,
+      "sort": 2,
+      "id": "pizzas-doces",
+      "name": "Pizzas Doces",
+      "icon": "🍫",
+      "description": "Broto sobremesa com 4 fatias."
+    },
+    {
+      "productId": "calzone",
+      "active": true,
+      "sort": 3,
+      "id": "calzones",
+      "name": "Calzones Doces",
+      "icon": "🥟",
+      "description": "Do broto ao gigante."
+    },
+    {
+      "productId": "lasanha",
+      "active": true,
+      "sort": 4,
+      "id": "lasanhas",
+      "name": "Lasanhas",
+      "icon": "🍝",
+      "description": "Massa fresca artesanal."
+    },
+    {
+      "productId": null,
+      "active": true,
+      "sort": 5,
+      "id": "esfihas",
+      "name": "Esfihas",
+      "icon": "🫓",
+      "description": "Combos com refrigerante 1,5 L."
+    },
+    {
+      "productId": null,
+      "active": true,
+      "sort": 6,
+      "id": "bebidas",
+      "name": "Bebidas",
+      "icon": "🥤",
+      "description": "Sempre geladas."
+    }
+  ],
+  "products": [
+    {
+      "popular": false,
+      "active": true,
+      "sort": 0,
+      "badge": "",
+      "id": "pizza-salgada",
+      "categoryId": "pizzas-salgadas",
+      "kind": "pizza",
+      "name": "Pizza Salgada",
+      "description": "Monte do seu jeito: escolha o tamanho e até 3 sabores. Toda pizza salgada acompanha borda de requeijão e refrigerante.",
+      "image": "assets/img/menu/pizza-salgada.webp",
+      "sizes": [
+        {
+          "id": "broto",
+          "name": "Broto",
+          "slices": 4,
+          "cm": 25,
+          "maxFlavors": 1,
+          "includes": "Borda de requeijão + Guaraná Pureza 600 ml"
+        },
+        {
+          "id": "media",
+          "name": "Média",
+          "slices": 6,
+          "cm": 30,
+          "maxFlavors": 2,
+          "includes": "Borda de requeijão + Guaraná Pureza 600 ml"
+        },
+        {
+          "id": "grande",
+          "name": "Grande",
+          "slices": 8,
+          "cm": 35,
+          "maxFlavors": 2,
+          "includes": "Borda de requeijão + Guaraná Pureza 1,5 L"
+        },
+        {
+          "id": "gigante",
+          "name": "Gigante",
+          "slices": 12,
+          "cm": 40,
+          "maxFlavors": 3,
+          "includes": "Borda de requeijão + Guaraná Pureza 1,5 L"
+        }
+      ],
+      "addonGroupId": "bordas"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 1,
+      "badge": "",
+      "id": "pizza-doce",
+      "categoryId": "pizzas-doces",
+      "kind": "pizza",
+      "name": "Pizza Doce (Broto Sobremesa)",
+      "description": "Pizza broto doce com 4 fatias — a sobremesa perfeita.",
+      "image": "assets/img/menu/pizza-doce.webp",
+      "sizes": [
+        {
+          "id": "broto-doce",
+          "name": "Broto Sobremesa",
+          "slices": 4,
+          "cm": 25,
+          "maxFlavors": 1,
+          "includes": ""
+        }
+      ],
+      "addonGroupId": null
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 2,
+      "badge": "",
+      "id": "calzone",
+      "categoryId": "calzones",
+      "kind": "pizza",
+      "name": "Calzone Doce",
+      "description": "Calzone recheado e assado na hora. Escolha o tamanho e o sabor.",
+      "image": "assets/img/menu/calzone.webp",
+      "sizes": [
+        {
+          "id": "broto",
+          "name": "Broto",
+          "slices": 4,
+          "cm": 25,
+          "maxFlavors": 1,
+          "includes": ""
+        },
+        {
+          "id": "media",
+          "name": "Média",
+          "slices": 6,
+          "cm": 30,
+          "maxFlavors": 1,
+          "includes": ""
+        },
+        {
+          "id": "grande",
+          "name": "Grande",
+          "slices": 8,
+          "cm": 35,
+          "maxFlavors": 1,
+          "includes": ""
+        },
+        {
+          "id": "gigante",
+          "name": "Gigante",
+          "slices": 12,
+          "cm": 40,
+          "maxFlavors": 1,
+          "includes": ""
+        }
+      ],
+      "addonGroupId": null
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 3,
+      "badge": "",
+      "id": "lasanha",
+      "categoryId": "lasanhas",
+      "kind": "pizza",
+      "name": "Lasanha Artesanal",
+      "description": "Lasanha artesanal com massa fresca e recheio à sua escolha. Sabor, qualidade e carinho em cada camada.",
+      "image": "assets/img/menu/lasanha.webp",
+      "sizes": [
+        {
+          "id": "750g",
+          "name": "750 g",
+          "maxFlavors": 1,
+          "includes": ""
+        },
+        {
+          "id": "1kg",
+          "name": "1 kg",
+          "maxFlavors": 1,
+          "includes": ""
+        },
+        {
+          "id": "combo-2",
+          "name": "Combo 2 Lasanhas",
+          "maxFlavors": 2,
+          "includes": "Duas lasanhas de 750 g — um sabor em cada"
+        }
+      ],
+      "addonGroupId": null
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 4,
+      "badge": "",
+      "id": "esfihas",
+      "categoryId": "esfihas",
+      "kind": "units",
+      "name": "Combo de Esfihas",
+      "description": "Esfihas abertas assadas na hora + refrigerante 1,5 L. Escolha quantas quiser de cada sabor.",
+      "image": "assets/img/menu/esfihas.webp",
+      "sizes": [
+        {
+          "id": "c10",
+          "name": "10 esfihas",
+          "units": 10,
+          "price": 61.99,
+          "includes": "Refrigerante 1,5 L"
+        },
+        {
+          "id": "c15",
+          "name": "15 esfihas",
+          "units": 15,
+          "price": 69.99,
+          "includes": "Refrigerante 1,5 L"
+        },
+        {
+          "id": "c20",
+          "name": "20 esfihas",
+          "units": 20,
+          "price": 99.99,
+          "includes": "Refrigerante 1,5 L"
+        }
+      ],
+      "addonGroupId": null
+    },
+    {
+      "popular": true,
+      "active": true,
+      "sort": 5,
+      "badge": "",
+      "id": "combo-medio",
+      "categoryId": "combos",
+      "kind": "combo",
+      "name": "Combo Médio",
+      "description": "Pizza média salgada (6 fatias) + pizza doce broto (4 fatias) + borda de requeijão + refrigerante.",
+      "price": 105.9,
+      "image": "assets/img/menu/combo-medio.webp",
+      "parts": [
+        {
+          "id": "pizza",
+          "label": "Pizza Média salgada (6 fatias)",
+          "productId": "pizza-salgada",
+          "sizeId": "media",
+          "maxFlavors": 2,
+          "addonGroupId": "bordas"
+        },
+        {
+          "id": "doce",
+          "label": "Pizza doce broto (4 fatias)",
+          "productId": "pizza-doce",
+          "sizeId": "broto-doce",
+          "maxFlavors": 1,
+          "allowedFlavorIds": [
+            "doce-chocolate-ao-leite",
+            "doce-chocolate-branco"
+          ]
+        }
+      ],
+      "drinks": {
+        "label": "Refrigerante",
+        "qty": 1,
+        "options": [
+          {
+            "id": "pureza-15",
+            "name": "Guaraná Pureza 1,5 L",
+            "extra": 0
+          },
+          {
+            "id": "coca-600",
+            "name": "Coca-Cola 600 ml",
+            "extra": 5
+          },
+          {
+            "id": "coca-zero-600",
+            "name": "Coca-Cola Zero 600 ml",
+            "extra": 5
+          }
+        ]
+      }
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 6,
+      "badge": "",
+      "id": "combo-grande",
+      "categoryId": "combos",
+      "kind": "combo",
+      "name": "Combo Grande",
+      "description": "Pizza grande salgada (8 fatias) + pizza doce broto (4 fatias) + borda de requeijão + refrigerante.",
+      "price": 109.9,
+      "image": "assets/img/menu/combo-grande.webp",
+      "parts": [
+        {
+          "id": "pizza",
+          "label": "Pizza Grande salgada (8 fatias)",
+          "productId": "pizza-salgada",
+          "sizeId": "grande",
+          "maxFlavors": 2,
+          "addonGroupId": "bordas"
+        },
+        {
+          "id": "doce",
+          "label": "Pizza doce broto (4 fatias)",
+          "productId": "pizza-doce",
+          "sizeId": "broto-doce",
+          "maxFlavors": 1,
+          "allowedFlavorIds": [
+            "doce-chocolate-ao-leite",
+            "doce-chocolate-branco"
+          ]
+        }
+      ],
+      "drinks": {
+        "label": "Refrigerante",
+        "qty": 1,
+        "options": [
+          {
+            "id": "pureza-15",
+            "name": "Guaraná Pureza 1,5 L",
+            "extra": 0
+          },
+          {
+            "id": "pureza-zero-15",
+            "name": "Guaraná Pureza Zero 1,5 L",
+            "extra": 0
+          },
+          {
+            "id": "fanta-2l",
+            "name": "Fanta Laranja 2 L",
+            "extra": 6
+          },
+          {
+            "id": "coca-2l",
+            "name": "Coca-Cola 2 L",
+            "extra": 8.5
+          },
+          {
+            "id": "coca-zero-2l",
+            "name": "Coca-Cola Zero 2 L",
+            "extra": 8.5
+          },
+          {
+            "id": "sprite-2l",
+            "name": "Sprite 2 L",
+            "extra": 8.5
+          }
+        ]
+      }
+    },
+    {
+      "popular": true,
+      "active": true,
+      "sort": 7,
+      "badge": "",
+      "id": "combo-gigante",
+      "categoryId": "combos",
+      "kind": "combo",
+      "name": "Combo Gigante",
+      "description": "Pizza gigante salgada (12 fatias) + pizza doce broto (4 fatias) + borda de requeijão + refrigerante.",
+      "price": 115.9,
+      "image": "assets/img/menu/combo-gigante.webp",
+      "parts": [
+        {
+          "id": "pizza",
+          "label": "Pizza Gigante salgada (12 fatias)",
+          "productId": "pizza-salgada",
+          "sizeId": "gigante",
+          "maxFlavors": 3,
+          "addonGroupId": "bordas"
+        },
+        {
+          "id": "doce",
+          "label": "Pizza doce broto (4 fatias)",
+          "productId": "pizza-doce",
+          "sizeId": "broto-doce",
+          "maxFlavors": 1,
+          "allowedFlavorIds": [
+            "doce-chocolate-ao-leite",
+            "doce-chocolate-branco"
+          ]
+        }
+      ],
+      "drinks": {
+        "label": "Refrigerante",
+        "qty": 1,
+        "options": [
+          {
+            "id": "pureza-15",
+            "name": "Guaraná Pureza 1,5 L",
+            "extra": 0
+          },
+          {
+            "id": "pureza-zero-15",
+            "name": "Guaraná Pureza Zero 1,5 L",
+            "extra": 0
+          },
+          {
+            "id": "fanta-2l",
+            "name": "Fanta Laranja 2 L",
+            "extra": 6
+          },
+          {
+            "id": "coca-2l",
+            "name": "Coca-Cola 2 L",
+            "extra": 8.5
+          },
+          {
+            "id": "coca-zero-2l",
+            "name": "Coca-Cola Zero 2 L",
+            "extra": 8.5
+          },
+          {
+            "id": "sprite-2l",
+            "name": "Sprite 2 L",
+            "extra": 8.5
+          }
+        ]
+      }
+    },
+    {
+      "popular": true,
+      "active": true,
+      "sort": 8,
+      "badge": "",
+      "id": "combo-galera",
+      "categoryId": "combos",
+      "kind": "combo",
+      "name": "Combo Galera",
+      "description": "2 pizzas gigantes salgadas (12 fatias cada) + borda de requeijão + 2 refrigerantes.",
+      "price": 189.9,
+      "image": "assets/img/menu/combo-galera.webp",
+      "parts": [
+        {
+          "id": "pizza1",
+          "label": "1ª Pizza Gigante (12 fatias)",
+          "productId": "pizza-salgada",
+          "sizeId": "gigante",
+          "maxFlavors": 3,
+          "addonGroupId": "bordas"
+        },
+        {
+          "id": "pizza2",
+          "label": "2ª Pizza Gigante (12 fatias)",
+          "productId": "pizza-salgada",
+          "sizeId": "gigante",
+          "maxFlavors": 3,
+          "addonGroupId": "bordas"
+        }
+      ],
+      "drinks": {
+        "label": "Refrigerantes",
+        "qty": 2,
+        "options": [
+          {
+            "id": "pureza-15",
+            "name": "Guaraná Pureza 1,5 L",
+            "extra": 0
+          },
+          {
+            "id": "pureza-zero-15",
+            "name": "Guaraná Pureza Zero 1,5 L",
+            "extra": 0
+          },
+          {
+            "id": "fanta-2l",
+            "name": "Fanta Laranja 2 L",
+            "extra": 6
+          },
+          {
+            "id": "coca-2l",
+            "name": "Coca-Cola 2 L",
+            "extra": 8.5
+          },
+          {
+            "id": "coca-zero-2l",
+            "name": "Coca-Cola Zero 2 L",
+            "extra": 8.5
+          },
+          {
+            "id": "sprite-2l",
+            "name": "Sprite 2 L",
+            "extra": 8.5
+          }
+        ]
+      }
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 9,
+      "badge": "",
+      "id": "bebida-coca-cola-350-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Coca-Cola 350 ml",
+      "description": "Lata bem gelada.",
+      "price": 7,
+      "image": "assets/img/menu/bebida-coca-cola-350-ml.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 10,
+      "badge": "",
+      "id": "bebida-coca-cola-zero-350-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Coca-Cola Zero 350 ml",
+      "description": "Lata bem gelada.",
+      "price": 7,
+      "image": "assets/img/menu/bebida-coca-cola-zero-350-ml.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 11,
+      "badge": "",
+      "id": "bebida-guarana-pureza-350-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Guaraná Pureza 350 ml",
+      "description": "Lata bem gelada.",
+      "price": 7,
+      "image": "assets/img/menu/bebida-guarana-pureza-350-ml.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 12,
+      "badge": "",
+      "id": "bebida-guarana-antarctica-350-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Guaraná Antarctica 350 ml",
+      "description": "Lata bem gelada.",
+      "price": 7,
+      "image": "assets/img/menu/bebida-guarana-antarctica-350-ml.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 13,
+      "badge": "",
+      "id": "bebida-fanta-laranja-350-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Fanta Laranja 350 ml",
+      "description": "Lata bem gelada.",
+      "price": 7,
+      "image": "assets/img/menu/bebida-fanta-laranja-350-ml.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 14,
+      "badge": "",
+      "id": "bebida-coca-cola-600-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Coca-Cola 600 ml",
+      "description": "Bem gelada.",
+      "price": 10,
+      "image": "assets/img/menu/bebida-coca-cola-600-ml.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 15,
+      "badge": "",
+      "id": "bebida-coca-cola-zero-600-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Coca-Cola Zero 600 ml",
+      "description": "Bem gelada.",
+      "price": 10,
+      "image": "assets/img/menu/bebida-coca-cola-zero-600-ml.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 16,
+      "badge": "",
+      "id": "bebida-guarana-pureza-600-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Guaraná Pureza 600 ml",
+      "description": "Bem gelada.",
+      "price": 10,
+      "image": "assets/img/menu/bebida-guarana-pureza-600-ml.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 17,
+      "badge": "",
+      "id": "bebida-guarana-pureza-1-5-l",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Guaraná Pureza 1,5 L",
+      "description": "Bem gelada.",
+      "price": 12,
+      "image": "assets/img/menu/bebida-guarana-pureza-1-5-l.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 18,
+      "badge": "",
+      "id": "bebida-guarana-pureza-zero-1-5-l",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Guaraná Pureza Zero 1,5 L",
+      "description": "Bem gelada.",
+      "price": 12,
+      "image": "assets/img/menu/bebida-guarana-pureza-zero-1-5-l.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 19,
+      "badge": "",
+      "id": "bebida-coca-cola-2-l",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Coca-Cola 2 L",
+      "description": "Bem gelada.",
+      "price": 15,
+      "image": "assets/img/menu/bebida-coca-cola-2-l.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 20,
+      "badge": "",
+      "id": "bebida-agua-sem-gas-500-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Água sem Gás 500 ml",
+      "description": "Bem gelada.",
+      "price": 5,
+      "image": "assets/img/menu/bebida-agua-sem-gas-500-ml.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 21,
+      "badge": "",
+      "id": "bebida-agua-com-gas-500-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Água com Gás 500 ml",
+      "description": "Bem gelada.",
+      "price": 6,
+      "image": "assets/img/menu/bebida-agua-com-gas-500-ml.webp"
+    },
+    {
+      "popular": false,
+      "active": true,
+      "sort": 22,
+      "badge": "",
+      "id": "bebida-heineken-long-neck-330-ml",
+      "categoryId": "bebidas",
+      "kind": "simple",
+      "name": "Heineken Long Neck 330 ml",
+      "description": "Cerveja long neck gelada. Venda proibida para menores de 18 anos.",
+      "price": 12.5,
+      "image": "assets/img/menu/bebida-heineken-long-neck-330-ml.webp"
+    }
+  ],
+  "flavors": [
+    {
+      "id": "salgada-a-moda-da-casa",
+      "productId": "pizza-salgada",
+      "name": "A Moda da Casa",
+      "description": "Molho de tomate, muçarela, frango, calabresa, palmito, milho, requeijão, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-a-moda-da-casa.webp",
+      "tier": "especial",
+      "tags": [
+        "frango",
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": true,
+      "active": true,
+      "sort": 0
+    },
+    {
+      "id": "salgada-alho-e-oleo",
+      "productId": "pizza-salgada",
+      "name": "Alho e Óleo",
+      "description": "Molho de tomate, muçarela, alho, óleo, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-alho-e-oleo.webp",
+      "tier": "tradicional",
+      "tags": [
+        "vegetariana"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 1
+    },
+    {
+      "id": "salgada-alho-poro",
+      "productId": "pizza-salgada",
+      "name": "Alho Poró",
+      "description": "Molho de tomate, muçarela, alho poró, cream cheese, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-alho-poro.webp",
+      "tier": "tradicional",
+      "tags": [
+        "vegetariana",
+        "queijos"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 2
+    },
+    {
+      "id": "salgada-americana",
+      "productId": "pizza-salgada",
+      "name": "Americana",
+      "description": "Molho de tomate, muçarela, ovo, bacon, milho, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-americana.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 3
+    },
+    {
+      "id": "salgada-atum",
+      "productId": "pizza-salgada",
+      "name": "Atum",
+      "description": "Molho de tomate, muçarela, atum, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-atum.webp",
+      "tier": "especial",
+      "tags": [
+        "frutos-do-mar"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 4
+    },
+    {
+      "id": "salgada-atum-acebolado",
+      "productId": "pizza-salgada",
+      "name": "Atum Acebolado",
+      "description": "Molho de tomate, muçarela, atum, cebola, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-atum-acebolado.webp",
+      "tier": "especial",
+      "tags": [
+        "frutos-do-mar"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 5
+    },
+    {
+      "id": "salgada-bacon",
+      "productId": "pizza-salgada",
+      "name": "Bacon",
+      "description": "Molho de tomate, muçarela, bacon, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-bacon.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 6
+    },
+    {
+      "id": "salgada-baiana",
+      "productId": "pizza-salgada",
+      "name": "Baiana",
+      "description": "Molho de tomate, muçarela, cebola, ovo cozido, molho de pimenta, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-baiana.webp",
+      "tier": "tradicional",
+      "tags": [
+        "picante"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 7
+    },
+    {
+      "id": "salgada-brocolis",
+      "productId": "pizza-salgada",
+      "name": "Brócolis",
+      "description": "Molho de tomate, muçarela, brócolis, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-brocolis.webp",
+      "tier": "tradicional",
+      "tags": [
+        "vegetariana"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": false,
+      "sort": 8
+    },
+    {
+      "id": "salgada-brocolis-com-bacon",
+      "productId": "pizza-salgada",
+      "name": "Brócolis com Bacon",
+      "description": "Molho de tomate, muçarela, brócolis, bacon, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-brocolis-com-bacon.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 9
+    },
+    {
+      "id": "salgada-brocolis-com-catupiry",
+      "productId": "pizza-salgada",
+      "name": "Brócolis com Catupiry",
+      "description": "Molho de tomate, muçarela, brócolis, requeijão, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-brocolis-com-catupiry.webp",
+      "tier": "tradicional",
+      "tags": [
+        "vegetariana",
+        "queijos"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 10
+    },
+    {
+      "id": "salgada-caipira",
+      "productId": "pizza-salgada",
+      "name": "Caipira",
+      "description": "Molho de tomate, muçarela, frango, milho, requeijão, azeitonas, batata palha e orégano.",
+      "image": "assets/img/menu/salgada-caipira.webp",
+      "tier": "tradicional",
+      "tags": [
+        "frango"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": false,
+      "sort": 11
+    },
+    {
+      "id": "salgada-calabresa",
+      "productId": "pizza-salgada",
+      "name": "Calabresa",
+      "description": "Molho de tomate, muçarela, calabresa, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-calabresa.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": true,
+      "active": true,
+      "sort": 12
+    },
+    {
+      "id": "salgada-calabresa-acebolada",
+      "productId": "pizza-salgada",
+      "name": "Calabresa Acebolada",
+      "description": "Molho de tomate, muçarela, calabresa, cebola, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-calabresa-acebolada.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 13
+    },
+    {
+      "id": "salgada-camarao",
+      "productId": "pizza-salgada",
+      "name": "Camarão",
+      "description": "Molho de tomate, muçarela, camarão, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-camarao.webp",
+      "tier": "especial",
+      "tags": [
+        "frutos-do-mar"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 14
+    },
+    {
+      "id": "salgada-camarao-com-alho-e-oleo",
+      "productId": "pizza-salgada",
+      "name": "Camarão com Alho e Óleo",
+      "description": "Molho de tomate, muçarela, camarão, alho, óleo, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-camarao-com-alho-e-oleo.webp",
+      "tier": "especial",
+      "tags": [
+        "frutos-do-mar"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 15
+    },
+    {
+      "id": "salgada-camarao-cremoso",
+      "productId": "pizza-salgada",
+      "name": "Camarão Cremoso",
+      "description": "Molho de tomate, muçarela, camarão, requeijão, orégano e azeitona.",
+      "image": "assets/img/menu/salgada-camarao-cremoso.webp",
+      "tier": "especial",
+      "tags": [
+        "frutos-do-mar"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": true,
+      "active": true,
+      "sort": 16
+    },
+    {
+      "id": "salgada-carne-seca-acebolada",
+      "productId": "pizza-salgada",
+      "name": "Carne Seca Acebolada",
+      "description": "Molho de tomate, muçarela, carne seca desfiada e refogada na manteiga, tomate, cebola, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-carne-seca-acebolada.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 17
+    },
+    {
+      "id": "salgada-carioca",
+      "productId": "pizza-salgada",
+      "name": "Carioca",
+      "description": "Molho de tomate, muçarela, calabresa, bacon, requeijão, orégano e azeitona.",
+      "image": "assets/img/menu/salgada-carioca.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 18
+    },
+    {
+      "id": "salgada-catuperu",
+      "productId": "pizza-salgada",
+      "name": "Catuperu",
+      "description": "Molho de tomate, peito de peru, requeijão, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-catuperu.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 19
+    },
+    {
+      "id": "salgada-cinco-queijos",
+      "productId": "pizza-salgada",
+      "name": "Cinco Queijos",
+      "description": "Molho de tomate, muçarela, provolone, parmesão, requeijão, cheddar, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-cinco-queijos.webp",
+      "tier": "especial",
+      "tags": [
+        "queijos",
+        "vegetariana"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 20
+    },
+    {
+      "id": "salgada-coracao",
+      "productId": "pizza-salgada",
+      "name": "Coração",
+      "description": "Molho de tomate, muçarela, coração, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-coracao.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 21
+    },
+    {
+      "id": "salgada-costela-bovina-1",
+      "productId": "pizza-salgada",
+      "name": "Costela Bovina 1",
+      "description": "Molho de tomate, muçarela, costela bovina desfiada, molho barbecue, pimentão, tomate, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-costela-bovina-1.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 22
+    },
+    {
+      "id": "salgada-costela-bovina-2",
+      "productId": "pizza-salgada",
+      "name": "Costela Bovina 2",
+      "description": "Molho de tomate, muçarela, costela bovina desfiada, molho barbecue, bacon, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-costela-bovina-2.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 23
+    },
+    {
+      "id": "salgada-file-com-4-queijos",
+      "productId": "pizza-salgada",
+      "name": "Filé com 4 Queijos",
+      "description": "Molho de tomate, muçarela, filé mignon, provolone, parmesão, requeijão, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-file-com-4-queijos.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes",
+        "queijos"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 24
+    },
+    {
+      "id": "salgada-file-com-alho-e-oleo",
+      "productId": "pizza-salgada",
+      "name": "Filé com Alho e Óleo",
+      "description": "Molho de tomate, muçarela, filé mignon, alho, óleo, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-file-com-alho-e-oleo.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 25
+    },
+    {
+      "id": "salgada-file-com-cheddar",
+      "productId": "pizza-salgada",
+      "name": "Filé com Cheddar",
+      "description": "Molho de tomate, muçarela, filé mignon, cheddar, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-file-com-cheddar.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": true,
+      "active": true,
+      "sort": 26
+    },
+    {
+      "id": "salgada-file-mignon",
+      "productId": "pizza-salgada",
+      "name": "Filé Mignon",
+      "description": "Molho de tomate, muçarela, filé mignon, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-file-mignon.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 27
+    },
+    {
+      "id": "salgada-frango",
+      "productId": "pizza-salgada",
+      "name": "Frango",
+      "description": "Molho de tomate, muçarela, frango desfiado, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-frango.webp",
+      "tier": "tradicional",
+      "tags": [
+        "frango"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 28
+    },
+    {
+      "id": "salgada-frango-com-catupiry",
+      "productId": "pizza-salgada",
+      "name": "Frango com Catupiry",
+      "description": "Molho de tomate, muçarela, frango desfiado, requeijão, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-frango-com-catupiry.webp",
+      "tier": "tradicional",
+      "tags": [
+        "frango"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": true,
+      "active": true,
+      "sort": 29
+    },
+    {
+      "id": "salgada-frango-com-cheddar",
+      "productId": "pizza-salgada",
+      "name": "Frango com Cheddar",
+      "description": "Molho de tomate, muçarela, frango desfiado, cheddar, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-frango-com-cheddar.webp",
+      "tier": "tradicional",
+      "tags": [
+        "frango"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 30
+    },
+    {
+      "id": "salgada-frango-supremo",
+      "productId": "pizza-salgada",
+      "name": "Frango Supremo",
+      "description": "Molho de tomate, muçarela, frango desfiado, tomate, milho, creme de leite, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-frango-supremo.webp",
+      "tier": "tradicional",
+      "tags": [
+        "frango"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 31
+    },
+    {
+      "id": "salgada-fritas-com-bacon-e-cheddar",
+      "productId": "pizza-salgada",
+      "name": "Fritas com Bacon e Cheddar",
+      "description": "Molho de tomate, muçarela, batata frita, bacon, cheddar e orégano.",
+      "image": "assets/img/menu/salgada-fritas-com-bacon-e-cheddar.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 32
+    },
+    {
+      "id": "salgada-havaiana-1",
+      "productId": "pizza-salgada",
+      "name": "Havaiana 1",
+      "description": "Molho de tomate, muçarela, presunto, bacon, abacaxi, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-havaiana-1.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 33
+    },
+    {
+      "id": "salgada-havaiana-2",
+      "productId": "pizza-salgada",
+      "name": "Havaiana 2",
+      "description": "Molho de tomate, muçarela, peito de peru, cheddar, abacaxi, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-havaiana-2.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 34
+    },
+    {
+      "id": "salgada-hot-dog",
+      "productId": "pizza-salgada",
+      "name": "Hot Dog",
+      "description": "Molho de tomate com salsicha, muçarela, milho, ervilha, maionese, batata palha e orégano.",
+      "image": "assets/img/menu/salgada-hot-dog.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 35
+    },
+    {
+      "id": "salgada-linguica-blumenau",
+      "productId": "pizza-salgada",
+      "name": "Linguiça Blumenau",
+      "description": "Molho de tomate, muçarela, linguiça Blumenau, cebola, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-linguica-blumenau.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 36
+    },
+    {
+      "id": "salgada-lombinho",
+      "productId": "pizza-salgada",
+      "name": "Lombinho",
+      "description": "Molho de tomate, muçarela, lombo canadense, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-lombinho.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 37
+    },
+    {
+      "id": "salgada-lombinho-cremoso",
+      "productId": "pizza-salgada",
+      "name": "Lombinho Cremoso",
+      "description": "Molho de tomate, muçarela, lombo canadense, requeijão, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-lombinho-cremoso.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 38
+    },
+    {
+      "id": "salgada-lombinho-supremo",
+      "productId": "pizza-salgada",
+      "name": "Lombinho Supremo",
+      "description": "Molho de tomate, muçarela, lombo canadense, milho, tomate, creme de leite, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-lombinho-supremo.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 39
+    },
+    {
+      "id": "salgada-madri",
+      "productId": "pizza-salgada",
+      "name": "Madri",
+      "description": "Molho de tomate, muçarela, bacon, palmito, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-madri.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 40
+    },
+    {
+      "id": "salgada-marguerita",
+      "productId": "pizza-salgada",
+      "name": "Marguerita",
+      "description": "Molho de tomate, muçarela, tomate, manjericão, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-marguerita.webp",
+      "tier": "tradicional",
+      "tags": [
+        "vegetariana"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": true,
+      "active": true,
+      "sort": 41
+    },
+    {
+      "id": "salgada-mexicana",
+      "productId": "pizza-salgada",
+      "name": "Mexicana",
+      "description": "Molho de tomate, muçarela, presunto, bacon, pimentão, molho de pimenta, pimenta biquinho, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-mexicana.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes",
+        "picante"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 42
+    },
+    {
+      "id": "salgada-milho-cremoso",
+      "productId": "pizza-salgada",
+      "name": "Milho Cremoso",
+      "description": "Molho de tomate, muçarela, milho, creme de leite, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-milho-cremoso.webp",
+      "tier": "tradicional",
+      "tags": [
+        "vegetariana"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 43
+    },
+    {
+      "id": "salgada-mussarela",
+      "productId": "pizza-salgada",
+      "name": "Mussarela",
+      "description": "Molho de tomate, muçarela, tomate, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-mussarela.webp",
+      "tier": "tradicional",
+      "tags": [
+        "vegetariana",
+        "queijos"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 44
+    },
+    {
+      "id": "salgada-nordestina",
+      "productId": "pizza-salgada",
+      "name": "Nordestina",
+      "description": "Molho de tomate, muçarela, carne seca desfiada, cream cheese, pimenta biquinho, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-nordestina.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes",
+        "picante"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 45
+    },
+    {
+      "id": "salgada-palmito",
+      "productId": "pizza-salgada",
+      "name": "Palmito",
+      "description": "Molho de tomate, muçarela, palmito, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-palmito.webp",
+      "tier": "tradicional",
+      "tags": [
+        "vegetariana"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 46
+    },
+    {
+      "id": "salgada-pepperoni",
+      "productId": "pizza-salgada",
+      "name": "Pepperoni",
+      "description": "Molho de tomate, muçarela, pepperoni, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-pepperoni.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes",
+        "picante"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": true,
+      "active": true,
+      "sort": 47
+    },
+    {
+      "id": "salgada-pepperoni-com-quatro-queijos",
+      "productId": "pizza-salgada",
+      "name": "Pepperoni com Quatro Queijos",
+      "description": "Molho de tomate, muçarela, pepperoni, provolone, parmesão, requeijão, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-pepperoni-com-quatro-queijos.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes",
+        "queijos"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 48
+    },
+    {
+      "id": "salgada-portuguesa-1",
+      "productId": "pizza-salgada",
+      "name": "Portuguesa 1",
+      "description": "Molho de tomate, muçarela, presunto, cebola, ovo cozido, bacon, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-portuguesa-1.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": true,
+      "active": true,
+      "sort": 49
+    },
+    {
+      "id": "salgada-portuguesa-2",
+      "productId": "pizza-salgada",
+      "name": "Portuguesa 2",
+      "description": "Molho de tomate, muçarela, presunto, cebola, ovo cozido, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-portuguesa-2.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 50
+    },
+    {
+      "id": "salgada-quatro-queijos",
+      "productId": "pizza-salgada",
+      "name": "Quatro Queijos",
+      "description": "Molho de tomate, muçarela, provolone, parmesão, requeijão, azeitonas e orégano.",
+      "image": "assets/img/menu/salgada-quatro-queijos.webp",
+      "tier": "tradicional",
+      "tags": [
+        "queijos",
+        "vegetariana"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": true,
+      "active": true,
+      "sort": 51
+    },
+    {
+      "id": "salgada-romanesca",
+      "productId": "pizza-salgada",
+      "name": "Romanesca",
+      "description": "Molho de tomate, muçarela, calabresa, presunto, ovo cozido, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-romanesca.webp",
+      "tier": "tradicional",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 52
+    },
+    {
+      "id": "salgada-rucula-com-tomate-seco",
+      "productId": "pizza-salgada",
+      "name": "Rúcula com Tomate Seco",
+      "description": "Molho de tomate, muçarela, rúcula, tomate seco, parmesão e orégano.",
+      "image": "assets/img/menu/salgada-rucula-com-tomate-seco.webp",
+      "tier": "tradicional",
+      "tags": [
+        "vegetariana"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 53
+    },
+    {
+      "id": "salgada-salmao",
+      "productId": "pizza-salgada",
+      "name": "Salmão",
+      "description": "Molho de tomate, muçarela, salmão, cream cheese, alho poró, azeitona e orégano.",
+      "image": "assets/img/menu/salgada-salmao.webp",
+      "tier": "especial",
+      "tags": [
+        "frutos-do-mar"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 54
+    },
+    {
+      "id": "salgada-strogonoff-de-camarao",
+      "productId": "pizza-salgada",
+      "name": "Strogonoff de Camarão",
+      "description": "Molho de tomate, muçarela, strogonoff de camarão, batata palha e orégano.",
+      "image": "assets/img/menu/salgada-strogonoff-de-camarao.webp",
+      "tier": "especial",
+      "tags": [
+        "frutos-do-mar"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 55
+    },
+    {
+      "id": "salgada-strogonoff-de-carne",
+      "productId": "pizza-salgada",
+      "name": "Strogonoff de Carne",
+      "description": "Molho de tomate, muçarela, strogonoff de carne, batata palha e orégano.",
+      "image": "assets/img/menu/salgada-strogonoff-de-carne.webp",
+      "tier": "especial",
+      "tags": [
+        "carnes"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": true,
+      "active": true,
+      "sort": 56
+    },
+    {
+      "id": "salgada-strogonoff-de-frango",
+      "productId": "pizza-salgada",
+      "name": "Strogonoff de Frango",
+      "description": "Molho de tomate, muçarela, strogonoff de frango, batata palha e orégano.",
+      "image": "assets/img/menu/salgada-strogonoff-de-frango.webp",
+      "tier": "especial",
+      "tags": [
+        "frango"
+      ],
+      "prices": {
+        "broto": 69.9,
+        "media": 98.9,
+        "grande": 103.9,
+        "gigante": 118.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 57
+    },
+    {
+      "id": "salgada-vegetariana",
+      "productId": "pizza-salgada",
+      "name": "Vegetariana",
+      "description": "Molho de tomate, muçarela, tomate, azeitona, champignon, pimentão, brócolis, palmito, milho e orégano.",
+      "image": "assets/img/menu/salgada-vegetariana.webp",
+      "tier": "tradicional",
+      "tags": [
+        "vegetariana"
+      ],
+      "prices": {
+        "broto": 61.9,
+        "media": 82.9,
+        "grande": 87.9,
+        "gigante": 94.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 58
+    },
+    {
+      "id": "doce-banana-com-canela",
+      "productId": "pizza-doce",
+      "name": "Banana com Canela",
+      "description": "Creme de leite, banana e canela.",
+      "image": "assets/img/menu/doce-banana-com-canela.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 50
+      },
+      "popular": false,
+      "active": true,
+      "sort": 59
+    },
+    {
+      "id": "doce-banana-nevada",
+      "productId": "pizza-doce",
+      "name": "Banana Nevada",
+      "description": "Creme de leite, banana, canela e chocolate branco.",
+      "image": "assets/img/menu/doce-banana-nevada.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 50
+      },
+      "popular": false,
+      "active": true,
+      "sort": 60
+    },
+    {
+      "id": "doce-beijinho",
+      "productId": "pizza-doce",
+      "name": "Beijinho",
+      "description": "Creme de leite, chocolate branco, coco ralado e doce de leite.",
+      "image": "assets/img/menu/doce-beijinho.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 50
+      },
+      "popular": false,
+      "active": true,
+      "sort": 61
+    },
+    {
+      "id": "doce-charge",
+      "productId": "pizza-doce",
+      "name": "Charge",
+      "description": "Creme de leite, chocolate ao leite, amendoim e doce de leite.",
+      "image": "assets/img/menu/doce-charge.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 50
+      },
+      "popular": false,
+      "active": true,
+      "sort": 62
+    },
+    {
+      "id": "doce-chocolate-ao-leite",
+      "productId": "pizza-doce",
+      "name": "Chocolate ao Leite",
+      "description": "Creme de leite e chocolate ao leite.",
+      "image": "assets/img/menu/doce-chocolate-ao-leite.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 50
+      },
+      "popular": true,
+      "active": true,
+      "sort": 63
+    },
+    {
+      "id": "doce-chocolate-branco",
+      "productId": "pizza-doce",
+      "name": "Chocolate Branco",
+      "description": "Creme de leite e chocolate branco.",
+      "image": "assets/img/menu/doce-chocolate-branco.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 50
+      },
+      "popular": false,
+      "active": true,
+      "sort": 64
+    },
+    {
+      "id": "doce-crocante",
+      "productId": "pizza-doce",
+      "name": "Crocante",
+      "description": "Creme de leite, chocolate branco, amendoim e doce de leite.",
+      "image": "assets/img/menu/doce-crocante.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 50
+      },
+      "popular": false,
+      "active": true,
+      "sort": 65
+    },
+    {
+      "id": "doce-fiesta",
+      "productId": "pizza-doce",
+      "name": "Fiesta",
+      "description": "Creme de leite, chocolate branco e confete.",
+      "image": "assets/img/menu/doce-fiesta.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 50
+      },
+      "popular": false,
+      "active": true,
+      "sort": 66
+    },
+    {
+      "id": "doce-talento",
+      "productId": "pizza-doce",
+      "name": "Talento",
+      "description": "Creme de leite, chocolate ao leite e confete.",
+      "image": "assets/img/menu/doce-talento.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 50
+      },
+      "popular": false,
+      "active": true,
+      "sort": 67
+    },
+    {
+      "id": "doce-abacaxi",
+      "productId": "pizza-doce",
+      "name": "Abacaxi",
+      "description": "Creme de leite, chocolate branco em raspas e abacaxi.",
+      "image": "assets/img/menu/doce-abacaxi.webp",
+      "tier": "especial",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 53
+      },
+      "popular": false,
+      "active": true,
+      "sort": 68
+    },
+    {
+      "id": "doce-california",
+      "productId": "pizza-doce",
+      "name": "Califórnia",
+      "description": "Creme de leite, muçarela, pêssego, figo, abacaxi, morango e canela.",
+      "image": "assets/img/menu/doce-california.webp",
+      "tier": "especial",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 53
+      },
+      "popular": false,
+      "active": true,
+      "sort": 69
+    },
+    {
+      "id": "doce-prestigio",
+      "productId": "pizza-doce",
+      "name": "Prestígio",
+      "description": "Creme de leite, chocolate ao leite e coco ralado.",
+      "image": "assets/img/menu/doce-prestigio.webp",
+      "tier": "especial",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 53
+      },
+      "popular": true,
+      "active": true,
+      "sort": 70
+    },
+    {
+      "id": "doce-seducao",
+      "productId": "pizza-doce",
+      "name": "Sedução",
+      "description": "Creme de leite, chocolate branco e morangos.",
+      "image": "assets/img/menu/doce-seducao.webp",
+      "tier": "especial",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 53
+      },
+      "popular": false,
+      "active": true,
+      "sort": 71
+    },
+    {
+      "id": "doce-sensacao",
+      "productId": "pizza-doce",
+      "name": "Sensação",
+      "description": "Creme de leite, chocolate ao leite e morangos.",
+      "image": "assets/img/menu/doce-sensacao.webp",
+      "tier": "especial",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "broto-doce": 53
+      },
+      "popular": true,
+      "active": true,
+      "sort": 72
+    },
+    {
+      "id": "calzone-abacaxi",
+      "productId": "calzone",
+      "name": "Abacaxi",
+      "description": "Creme de leite, chocolate branco e abacaxi.",
+      "image": "assets/img/menu/calzone-abacaxi.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "gigante": 95.9,
+        "grande": 90.9,
+        "media": 70.9,
+        "broto": 60.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 73
+    },
+    {
+      "id": "calzone-banana-com-merengue",
+      "productId": "calzone",
+      "name": "Banana com Merengue",
+      "description": "Creme de leite, banana caramelizada flambada com canela e cobertura de merengue.",
+      "image": "assets/img/menu/calzone-banana-com-merengue.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "gigante": 95.9,
+        "grande": 90.9,
+        "media": 70.9,
+        "broto": 50.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 74
+    },
+    {
+      "id": "calzone-maracuja",
+      "productId": "calzone",
+      "name": "Maracujá",
+      "description": "Creme de leite, chocolate branco e calda de maracujá.",
+      "image": "assets/img/menu/calzone-maracuja.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "gigante": 95.9,
+        "grande": 90.9,
+        "media": 70.9,
+        "broto": 50.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 75
+    },
+    {
+      "id": "calzone-ovomaltine",
+      "productId": "calzone",
+      "name": "Ovomaltine",
+      "description": "Creme de leite, creme de chocolate, Ovomaltine e confete.",
+      "image": "assets/img/menu/calzone-ovomaltine.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "gigante": 95.9,
+        "grande": 90.9,
+        "media": 70.9,
+        "broto": 50.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 76
+    },
+    {
+      "id": "calzone-pe-de-moleque",
+      "productId": "calzone",
+      "name": "Pé de Moleque",
+      "description": "Creme de leite, chocolate branco, amendoim e doce de leite.",
+      "image": "assets/img/menu/calzone-pe-de-moleque.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "gigante": 95.9,
+        "grande": 90.9,
+        "media": 70.9,
+        "broto": 50.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 77
+    },
+    {
+      "id": "calzone-prestigio",
+      "productId": "calzone",
+      "name": "Prestígio",
+      "description": "Creme de leite, chocolate ao leite, uva verde, coco ralado e doce de leite.",
+      "image": "assets/img/menu/calzone-prestigio.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "gigante": 95.9,
+        "grande": 90.9,
+        "media": 70.9,
+        "broto": 50.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 78
+    },
+    {
+      "id": "calzone-sonho-de-valsa",
+      "productId": "calzone",
+      "name": "Sonho de Valsa",
+      "description": "Creme de leite, chocolate ao leite, chocolate branco e morangos.",
+      "image": "assets/img/menu/calzone-sonho-de-valsa.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {
+        "gigante": 95.9,
+        "grande": 90.9,
+        "media": 70.9,
+        "broto": 50.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 79
+    },
+    {
+      "id": "lasanha-bolonhesa",
+      "productId": "lasanha",
+      "name": "Bolonhesa",
+      "description": "Lasanha artesanal de massa fresca com molho à bolonhesa e muçarela gratinada.",
+      "image": "assets/img/menu/lasanha-bolonhesa.webp",
+      "tier": "tradicional",
+      "tags": [],
+      "prices": {
+        "1kg": 79.9,
+        "750g": 49.9,
+        "combo-2": 79.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 80
+    },
+    {
+      "id": "lasanha-frango",
+      "productId": "lasanha",
+      "name": "Frango",
+      "description": "Lasanha artesanal de massa fresca com recheio de frango e muçarela gratinada.",
+      "image": "assets/img/menu/lasanha-frango.webp",
+      "tier": "tradicional",
+      "tags": [],
+      "prices": {
+        "1kg": 79.9,
+        "750g": 49.9,
+        "combo-2": 79.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 81
+    },
+    {
+      "id": "lasanha-quatro-queijos",
+      "productId": "lasanha",
+      "name": "Quatro Queijos",
+      "description": "Lasanha artesanal de massa fresca com recheio de quatro queijos.",
+      "image": "assets/img/menu/lasanha-quatro-queijos.webp",
+      "tier": "tradicional",
+      "tags": [],
+      "prices": {
+        "1kg": 79.9,
+        "750g": 49.9,
+        "combo-2": 79.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 82
+    },
+    {
+      "id": "lasanha-brocolis",
+      "productId": "lasanha",
+      "name": "Brócolis",
+      "description": "Lasanha artesanal de massa fresca com recheio de brócolis e muçarela gratinada.",
+      "image": "assets/img/menu/lasanha-brocolis.webp",
+      "tier": "tradicional",
+      "tags": [],
+      "prices": {
+        "1kg": 79.9,
+        "750g": 49.9,
+        "combo-2": 79.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 83
+    },
+    {
+      "id": "lasanha-camarao",
+      "productId": "lasanha",
+      "name": "Camarão",
+      "description": "Lasanha artesanal de massa fresca com recheio de camarão e muçarela gratinada.",
+      "image": "assets/img/menu/lasanha-camarao.webp",
+      "tier": "especial",
+      "tags": [],
+      "prices": {
+        "1kg": 99.9,
+        "750g": 69.9
+      },
+      "popular": false,
+      "active": true,
+      "sort": 84
+    },
+    {
+      "id": "esfiha-carne",
+      "productId": "esfihas",
+      "name": "Carne",
+      "description": "Carne temperada com bastante cebola, limão, tomate e especiarias.",
+      "image": "assets/img/menu/esfiha-carne.webp",
+      "tier": "tradicional",
+      "tags": [],
+      "prices": {},
+      "popular": false,
+      "active": true,
+      "sort": 85
+    },
+    {
+      "id": "esfiha-calabresa",
+      "productId": "esfihas",
+      "name": "Calabresa",
+      "description": "Muçarela e calabresa.",
+      "image": "assets/img/menu/esfiha-calabresa.webp",
+      "tier": "tradicional",
+      "tags": [],
+      "prices": {},
+      "popular": false,
+      "active": true,
+      "sort": 86
+    },
+    {
+      "id": "esfiha-frango-com-requeijao",
+      "productId": "esfihas",
+      "name": "Frango com Requeijão",
+      "description": "Frango e requeijão.",
+      "image": "assets/img/menu/esfiha-frango-com-requeijao.webp",
+      "tier": "tradicional",
+      "tags": [],
+      "prices": {},
+      "popular": false,
+      "active": true,
+      "sort": 87
+    },
+    {
+      "id": "esfiha-mucarela",
+      "productId": "esfihas",
+      "name": "Muçarela",
+      "description": "Muçarela e tomate.",
+      "image": "assets/img/menu/esfiha-mucarela.webp",
+      "tier": "tradicional",
+      "tags": [],
+      "prices": {},
+      "popular": false,
+      "active": true,
+      "sort": 88
+    },
+    {
+      "id": "esfiha-chocolate-preto-com-morango",
+      "productId": "esfihas",
+      "name": "Chocolate Preto com Morango",
+      "description": "Chocolate ao leite e morango.",
+      "image": "assets/img/menu/esfiha-chocolate-preto-com-morango.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {},
+      "popular": false,
+      "active": true,
+      "sort": 89
+    },
+    {
+      "id": "esfiha-chocolate-branco-com-morango",
+      "productId": "esfihas",
+      "name": "Chocolate Branco com Morango",
+      "description": "Chocolate branco e morango.",
+      "image": "assets/img/menu/esfiha-chocolate-branco-com-morango.webp",
+      "tier": "tradicional",
+      "tags": [
+        "doce"
+      ],
+      "prices": {},
+      "popular": false,
+      "active": true,
+      "sort": 90
+    }
+  ],
+  "addonGroups": [
+    {
+      "id": "bordas",
+      "name": "Borda",
+      "min": 0,
+      "max": 1,
+      "defaultOptionId": "requeijao",
+      "options": [
+        {
+          "active": true,
+          "sort": 0,
+          "id": "requeijao",
+          "name": "Requeijão (inclusa)",
+          "price": 0
+        },
+        {
+          "active": true,
+          "sort": 1,
+          "id": "sem-borda",
+          "name": "Sem borda",
+          "price": 0
+        },
+        {
+          "active": true,
+          "sort": 2,
+          "id": "cheddar",
+          "name": "Cheddar",
+          "price": 11.5
+        },
+        {
+          "active": true,
+          "sort": 3,
+          "id": "catupiry",
+          "name": "Catupiry original",
+          "price": 16
+        },
+        {
+          "active": true,
+          "sort": 4,
+          "id": "chocolate-ao-leite",
+          "name": "Chocolate ao leite",
+          "price": 11.5
+        },
+        {
+          "active": true,
+          "sort": 5,
+          "id": "chocolate-branco",
+          "name": "Chocolate branco",
+          "price": 11.5
+        },
+        {
+          "active": true,
+          "sort": 6,
+          "id": "doce-de-leite",
+          "name": "Doce de leite",
+          "price": 11.5
+        }
+      ]
+    }
+  ],
+  "testimonials": []
+}

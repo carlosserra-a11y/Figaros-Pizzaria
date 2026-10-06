@@ -1,878 +1,358 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Figaro's Pizzaria · Delivery de pizza em Palhoça, SC</title>
+  <meta name="description" content="Peça pizza da Figaro's Pizzaria em Palhoça, SC: 57 sabores salgados com borda de requeijão e refri inclusos, pizzas doces, calzones, lasanhas, esfihas e combos. Entrega e retirada.">
+  <meta name="theme-color" content="#982C27">
+  <!-- Site no GitHub Pages + servidor publicado em outro endereço? Descomente e coloque o endereço do servidor:
+  <meta name="figaros-api" content="https://SEU-SERVIDOR.up.railway.app/"> -->
+  <link rel="icon" href="assets/img/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
 
-  <title>Figaro's Pizzaria | Delivery em Palhoça, SC</title>
-
-  <meta
-    name="description"
-    content="Peça suas pizzas favoritas da Figaro's Pizzaria com rapidez, praticidade e muito sabor. Delivery, retirada e rodízio em Palhoça, SC."
-  />
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Figaro's Pizzaria · Palhoça, SC">
+  <meta property="og:description" content="57 sabores, borda de requeijão e refri inclusos. Peça pelo site e acompanhe seu pedido.">
+  <meta property="og:image" content="assets/img/logo.png">
+  <meta property="og:locale" content="pt_BR">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="modulepreload" href="js/shared/pricing.js">
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
-    rel="stylesheet"
-  >
-
-  <link rel="stylesheet" href="styles.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Figaro's Pizzaria",
+    "servesCuisine": ["Pizza", "Italiana", "Brasileira"],
+    "address": { "@type": "PostalAddress", "streetAddress": "Av. Elza Lucchi, 1277", "addressLocality": "Palhoça", "addressRegion": "SC", "postalCode": "88130-600", "addressCountry": "BR" },
+    "telephone": "+55 48 93341-0102",
+    "image": "assets/img/logo.png",
+    "acceptsReservations": false,
+    "hasMenu": "#cardapio"
+  }
+  </script>
 </head>
 
 <body>
+  <a class="skip-link" href="#cardapio">Pular para o cardápio</a>
+  <canvas class="fx-canvas" id="fxCanvas" aria-hidden="true"></canvas>
 
-  <div class="grain-overlay" aria-hidden="true"></div>
+  <div class="announcement" id="announcement" hidden></div>
 
-  <div
-    class="scroll-progress"
-    id="scrollProgress"
-    aria-hidden="true">
-  </div>
-
-  <div
-    class="site-3d-bg"
-    id="site3dBg"
-    aria-hidden="true">
-  </div>
-
-
-  <!-- HEADER -->
-
+  <!-- ======================= HEADER ======================= -->
   <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a class="brand" href="#inicio" aria-label="Figaro's Pizzaria — início">
+        <img src="assets/img/logo-256.webp" alt="" width="52" height="52">
+        <span class="brand-text">
+          <strong>Figaro's</strong>
+          <small>Pizzaria &amp; Restaurante</small>
+        </span>
+      </a>
 
-    <div class="header-inner">
-
-      <button class="logo" data-nav="inicio">
-        <span class="flame-badge">🔥</span>
-        <span>Figaro's</span>
-      </button>
-
-      <nav class="main-nav">
-
-        <button data-nav="inicio">
-          Início
-        </button>
-
-        <button data-nav="cardapio">
-          Cardápio
-        </button>
-
-        <button data-nav="populares">
-          Mais pedidos
-        </button>
-
-        <button data-nav="sobre">
-          Sobre nós
-        </button>
-
-        <button data-nav="contato">
-          Contato
-        </button>
-
+      <nav class="main-nav" aria-label="Seções">
+        <a href="#cardapio">Cardápio</a>
+        <a href="#destaques">Destaques</a>
+        <a href="#como-funciona">Como pedir</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#contato">Contato</a>
       </nav>
 
       <div class="header-actions">
-
-        <button
-          class="icon-btn"
-          id="cartBtn"
-          aria-label="Abrir carrinho">
-
-          🛒
-
-          <span
-            class="cart-badge"
-            id="cartBadge"
-            style="display:none;">
-            0
-          </span>
-
+        <span class="status-pill" id="statusPill" data-open="unknown"><i></i><span>…</span></span>
+        <button class="icon-btn" id="ordersBtn" type="button" aria-label="Meus pedidos" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h12a1 1 0 0 1 1 1v18l-3-2-3 2-3-2-3 2-2-1.3V3a1 1 0 0 1 1-1Zm2 5v2h8V7H8Zm0 4v2h8v-2H8Zm0 4v2h5v-2H8Z"/></svg>
+          <span class="dot" id="ordersDot" hidden></span>
         </button>
-
-        <button
-          class="icon-btn hamburger"
-          id="hamburgerBtn"
-          aria-label="Abrir menu">
-
-          ☰
-
+        <button class="cart-btn" id="cartBtn" type="button" aria-label="Abrir carrinho">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM3 2h2.2l.6 3H21l-2 9H7.4l.4 2H19v2H6.2L3.6 4H3V2Zm4 10h10.4l1.1-5H6.4l.6 5Z"/></svg>
+          <span class="cart-label">Carrinho</span>
+          <span class="cart-count" id="cartCount" aria-live="polite">0</span>
         </button>
-
+        <button class="icon-btn menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileNav">
+          <span></span><span></span><span></span>
+        </button>
       </div>
-
     </div>
-
-
-    <div class="mobile-menu" id="mobileMenu">
-
-      <button data-nav="inicio">
-        Início
-      </button>
-
-      <button data-nav="cardapio">
-        Cardápio
-      </button>
-
-      <button data-nav="populares">
-        Mais pedidos
-      </button>
-
-      <button data-nav="sobre">
-        Sobre nós
-      </button>
-
-      <button data-nav="contato">
-        Contato
-      </button>
-
-    </div>
-
+    <nav class="mobile-nav" id="mobileNav" aria-label="Seções (celular)" hidden>
+      <a href="#cardapio">Cardápio</a>
+      <a href="#destaques">Destaques</a>
+      <a href="#como-funciona">Como pedir</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#contato">Contato</a>
+    </nav>
+    <div class="tricolor" aria-hidden="true"><i></i><i></i><i></i></div>
   </header>
 
-
-
-  <!-- HERO -->
-
-  <section class="hero" id="inicio">
-
-    <div
-      class="floating-bg"
-      id="floatingBg">
-    </div>
-
-    <div class="hero-inner">
-
-      <div class="hero-copy">
-
-        <div class="eyebrow">
-
-          <span class="line"></span>
-
-          <span>
-            Forno a lenha · Palhoça, SC
-          </span>
-
-        </div>
-
-        <h1>
-          A pizza que você ama,
-          <span class="ember-text">
-            agora a um clique
-          </span>
-          de distância.
-        </h1>
-
-        <p class="sub">
-          Peça suas pizzas favoritas com rapidez,
-          praticidade e muito sabor.
-        </p>
-
-        <div class="hero-ctas">
-
-          <button
-            class="btn-ember"
-            data-nav="cardapio">
-
-            Pedir agora
-
-          </button>
-
-          <button
-            class="btn-outline"
-            data-nav="cardapio">
-
-            Ver cardápio →
-
-          </button>
-
-        </div>
-
-        <div class="hero-rating">
-
-          <span
-            class="stars"
-            id="heroStars">
-          </span>
-
-          <span>
-            4,5 · mais de 3.000 avaliações
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <div class="hero-visual">
-
-        <div
-          class="hero-arch"
-          id="heroArch">
-
-          <span style="font-size:150px; opacity:.9;">
-            🍕
-          </span>
-
-          <div class="badge">
-            <span>
-              🔥 assada na hora
-            </span>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- MAIS PEDIDOS -->
-
-  <section
-    class="popular-section"
-    id="populares">
-
-    <div class="wrap">
-
-      <div class="eyebrow">
-        <span>🔥</span>
-        <span>
-          Os favoritos da casa
-        </span>
-      </div>
-
-      <h2 class="section-title">
-        Mais pedidos
-      </h2>
-
-      <div
-        class="popular-scroll"
-        id="popularScroll">
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- CARDÁPIO -->
-
-  <section
-    class="menu-section"
-    id="cardapio">
-
-    <div class="wrap">
-
-      <div class="eyebrow">
-        <span>🔥</span>
-        <span>
-          Cardápio digital
-        </span>
-      </div>
-
-      <div class="menu-header-row">
-
-        <h2 class="section-title">
-          Monte seu pedido
-        </h2>
-
-        <div class="search-box">
-
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2">
-
-            <circle
-              cx="11"
-              cy="11"
-              r="8">
-            </circle>
-
-            <path
-              d="m21 21-4.3-4.3">
-            </path>
-
-          </svg>
-
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="Buscar no cardápio…"
-          />
-
-        </div>
-
-      </div>
-
-
-      <div
-        class="pill-row"
-        id="categoryPills">
-      </div>
-
-
-      <div
-        class="type-filter"
-        id="typeFilter"
-        style="display:none;">
-
-        <button
-          data-filter="todas"
-          class="active">
-
-          Todas
-
-        </button>
-
-        <button data-filter="salgada">
-          Salgadas
-        </button>
-
-        <button data-filter="doce">
-          Doces
-        </button>
-
-      </div>
-
-
-      <div
-        class="menu-grid"
-        id="menuGrid">
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- SOBRE -->
-
-  <section
-    class="about-section"
-    id="sobre">
-
-    <div class="about-grid">
-
-      <div>
-
-        <div class="eyebrow">
-          <span>🔥</span>
-          <span>
-            Desde sempre, feita com carinho
-          </span>
-        </div>
-
-        <h2 class="section-title">
-          Tradição de forno a lenha,
-          no ritmo da sua casa.
-        </h2>
-
-        <p class="lead">
-          A Figaro's Pizzaria nasceu em Palhoça
-          com uma missão simples: servir pizzas
-          generosas, recheadas de verdade, em um
-          ambiente acolhedor e com atendimento de
-          quem gosta do que faz. Hoje somos referência
-          em rodízio de pizza e buffet completo —
-          e levamos essa mesma experiência até a
-          porta da sua casa.
-        </p>
-
-        <div class="about-points">
-
-          <div class="about-point">
-            <span class="ico">🍕</span>
-            <span>Pizzas bem recheadas</span>
-          </div>
-
-          <div class="about-point">
-            <span class="ico">🔥</span>
-            <span>Grande variedade de sabores</span>
-          </div>
-
-          <div class="about-point">
-            <span class="ico">🍨</span>
-            <span>Pizzas salgadas e doces</span>
-          </div>
-
-          <div class="about-point">
-            <span class="ico">🍽️</span>
-            <span>Buffet completo</span>
-          </div>
-
-          <div class="about-point">
-            <span class="ico">♻️</span>
-            <span>Rodízio à vontade</span>
-          </div>
-
-          <div class="about-point">
-            <span class="ico">⭐</span>
-            <span>Ambiente agradável</span>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="about-visual">
-
-        <div class="about-arch">
-
-          <span style="font-size:100px;">
-            🔥
-          </span>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- AVALIAÇÕES -->
-
-  <section class="reviews-section">
-
-    <div class="wrap">
-
-      <div class="eyebrow">
-
-        <span>🔥</span>
-
-        <span>
-          O que dizem sobre nós
-        </span>
-
-      </div>
-
-      <div class="reviews-head">
-
-        <h2 class="section-title">
-          Avaliações
-        </h2>
-
-        <div class="rating-big">
-
-          <span class="num">
-            4,5
-          </span>
-
-          <div class="meta">
-
-            <span
-              class="stars"
-              id="reviewStars">
-            </span>
-
-            <span>
-              +3.000 avaliações
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <div
-        class="reviews-grid"
-        id="reviewsGrid">
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- LOCALIZAÇÃO -->
-
-  <section
-    class="location-section"
-    id="contato">
-
-    <div class="location-grid">
-
-      <div>
-
-        <div class="eyebrow">
-
-          <span>🔥</span>
-
-          <span>
-            Onde estamos
-          </span>
-
-        </div>
-
-        <h2 class="section-title">
-          Localização
-        </h2>
-
-        <div class="loc-list">
-
-          <div class="loc-item">
-
-            <span>📍</span>
-
-            <div>
-
-              <strong>
-                Figaro's Pizzaria
-              </strong>
-
-              <p>
-                Av. Elza Lucchi, 1277 -
-                Palhoça, SC, 88130-600
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="loc-item">
-
-            <span>📞</span>
-
-            <a href="tel:+5548933410102">
-              (48) 93341-0102
+  <main id="inicio">
+    <!-- ======================= HERO ======================= -->
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span>Forno aceso em Palhoça, SC</p>
+          <h1 id="heroTitle">A pizza do <span class="hl-red">Figaro's</span>, quentinha <span class="hl-green">na sua porta.</span></h1>
+          <p class="hero-sub">57 sabores salgados, pizzas doces, calzones, lasanhas e esfihas. <strong>Toda pizza salgada já vem com borda de requeijão e refrigerante.</strong></p>
+          <div class="hero-ctas">
+            <a class="btn btn-primary btn-lg" href="#cardapio" data-magnetic>
+              Pedir agora
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5l7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6L13 5Z"/></svg>
             </a>
-
+            <button class="btn btn-ghost btn-lg" type="button" id="heroBuildBtn">🍕 Montar minha pizza</button>
           </div>
+          <ul class="hero-trust">
+            <li id="heroRating" hidden></li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v9h2.3a3 3 0 0 1 5.4 1H23v-4l-3-4h-4V6a2 2 0 0 0-2-2H3a2 2 0 0 0-2 2v10h1.3A3 3 0 0 1 7.7 16H14V6H3Zm4 9a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm12 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>Entrega e retirada</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6Zm2 2v2h16V8H4Zm0 5v5h16v-5H4Zm2 2h5v2H6v-2Z"/></svg>PIX, cartão e dinheiro</li>
+          </ul>
+        </div>
 
-
-          <div class="loc-item">
-
-            <span>🕒</span>
-
-            <div>
-
-              <p>
-                Almoço: todos os dias,
-                11h às 14h30
-              </p>
-
-              <p>
-                Pizzaria: todos os dias,
-                18h30 às 23h
-              </p>
-
+        <div class="hero-visual" id="heroVisual" aria-hidden="true">
+          <div class="board">
+            <div class="pizza-spin">
+              <img src="assets/img/hero-pizza.webp" alt="" width="560" height="560" fetchpriority="high">
             </div>
-
+            <span class="steam s1"></span><span class="steam s2"></span><span class="steam s3"></span>
           </div>
-
+          <img class="hero-logo" src="assets/img/logo-256.webp" alt="" width="150" height="150">
+          <div class="floaters" id="floaters"></div>
+          <div class="hero-tag">
+            <strong>Borda + refri</strong>
+            <span>inclusos em toda pizza salgada</span>
+          </div>
         </div>
-
-
-        <a
-          class="btn-ember"
-          style="margin-top:28px;"
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.google.com/maps/dir/?api=1&destination=Figaro%27s%20Pizzaria%2C%20Av.%20Elza%20Lucchi%2C%201277%20-%20Palho%C3%A7a%2C%20SC%2C%2088130-600">
-
-          🧭 Como chegar
-
-        </a>
-
       </div>
+    </section>
 
-
-      <div class="map-frame">
-
-        <iframe
-          title="Mapa Figaro's Pizzaria"
-          loading="lazy"
-          src="https://www.google.com/maps?q=Figaro%27s%20Pizzaria%2C%20Av.%20Elza%20Lucchi%2C%201277%20-%20Palho%C3%A7a%2C%20SC%2C%2088130-600&output=embed">
-        </iframe>
-
-      </div>
-
+    <!-- faixa tricolor com sabores -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track" id="marqueeTrack"></div>
     </div>
 
-  </section>
-
-
-
-  <!-- FOOTER -->
-
-  <footer>
-
-    <div class="footer-grid">
-
-      <div>
-
-        <div class="footer-brand">
-
-          <span
-            class="flame-badge"
-            style="width:32px;height:32px;">
-
-            🔥
-
-          </span>
-
-          <span>
-            Figaro's
-          </span>
-
+    <!-- ======================= DESTAQUES ======================= -->
+    <section class="section highlights" id="destaques" aria-labelledby="destaquesTitle">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-line"></span><span id="highlightsEyebrow">Os queridinhos da casa</span></p>
+            <h2 class="section-title" id="destaquesTitle">Destaques</h2>
+          </div>
+          <div class="carousel-nav">
+            <button class="round-btn" type="button" data-scroll="-1" aria-label="Anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg></button>
+            <button class="round-btn" type="button" data-scroll="1" aria-label="Próximo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z"/></svg></button>
+          </div>
         </div>
+        <div class="carousel" id="highlights" tabindex="0" aria-label="Itens em destaque"></div>
+      </div>
+    </section>
 
-        <p class="desc">
-          Pizzaria e Restaurante em Palhoça, SC.
-          Delivery, retirada e rodízio.
-        </p>
-
-        <div class="social-row">
-
-          <a href="#" aria-label="Instagram">
-            📷
-          </a>
-
-          <a href="#" aria-label="Facebook">
-            📘
-          </a>
-
+    <!-- ======================= CARDÁPIO ======================= -->
+    <section class="section menu-section" id="cardapio" aria-labelledby="cardapioTitle">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-line"></span>Cardápio completo</p>
+            <h2 class="section-title" id="cardapioTitle">Monte seu pedido</h2>
+          </div>
+          <label class="search" for="searchInput">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 0 1 6.3 12.9l5.4 5.4-1.4 1.4-5.4-5.4A8 8 0 1 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"/></svg>
+            <span class="sr-only">Buscar no cardápio</span>
+            <input type="search" id="searchInput" placeholder="Buscar sabor ou ingrediente…" autocomplete="off" enterkeyhint="search">
+            <button type="button" class="search-clear" id="searchClear" aria-label="Limpar busca" hidden>×</button>
+          </label>
         </div>
-
       </div>
 
-
-      <div>
-
-        <p class="footer-heading">
-          Contato
-        </p>
-
-        <p class="text">
-          (48) 93341-0102
-        </p>
-
-        <p class="text">
-          Av. Elza Lucchi, 1277
-        </p>
-
-        <p class="text">
-          Palhoça, SC - 88130-600
-        </p>
-
-      </div>
-
-
-      <div>
-
-        <p class="footer-heading">
-          Links rápidos
-        </p>
-
-        <p
-          class="link"
-          data-nav="inicio">
-          Início
-        </p>
-
-        <p
-          class="link"
-          data-nav="cardapio">
-          Cardápio
-        </p>
-
-        <p
-          class="link"
-          data-nav="sobre">
-          Sobre nós
-        </p>
-
-        <p
-          class="link"
-          data-nav="contato">
-          Contato
-        </p>
-
-      </div>
-
-
-      <div>
-
-        <p class="footer-heading">
-          Pagamento
-        </p>
-
-        <div class="pay-tags">
-
-          <span>PIX</span>
-          <span>Cartão</span>
-          <span>Dinheiro</span>
-
+      <div class="cat-bar" id="catBar">
+        <div class="container">
+          <div class="cat-tabs" id="catTabs" role="tablist" aria-label="Categorias"></div>
         </div>
-
       </div>
 
+      <div class="container">
+        <div class="menu-body" id="menuBody" aria-live="polite">
+          <div class="skeleton-grid">
+            <div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= COMO FUNCIONA ======================= -->
+    <section class="section steps" id="como-funciona" aria-labelledby="stepsTitle">
+      <div class="container">
+        <p class="eyebrow center"><span class="eyebrow-line"></span>Simples assim</p>
+        <h2 class="section-title center" id="stepsTitle">Como pedir</h2>
+        <ol class="steps-grid">
+          <li class="step reveal">
+            <span class="step-num">1</span>
+            <div class="step-ico">🍕</div>
+            <h3>Escolha</h3>
+            <p>Monte a pizza do seu jeito — até 3 sabores na Gigante — ou pegue um combo.</p>
+          </li>
+          <li class="step reveal">
+            <span class="step-num">2</span>
+            <div class="step-ico">✅</div>
+            <h3>Confirme</h3>
+            <p>Finalize no site e envie o resumo pronto para o nosso WhatsApp com um toque.</p>
+          </li>
+          <li class="step reveal">
+            <span class="step-num">3</span>
+            <div class="step-ico">🛵</div>
+            <h3>Acompanhe</h3>
+            <p>Veja quando o pedido entra no forno e sai para entrega, em “Meus pedidos”.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ======================= SOBRE ======================= -->
+    <section class="section about" id="sobre" aria-labelledby="sobreTitle">
+      <canvas class="ember-canvas" id="emberCanvas" aria-hidden="true"></canvas>
+      <div class="container about-grid">
+        <div class="about-media reveal">
+          <figure class="about-photo main"><img src="assets/img/bg-about.webp" alt="Pizzaiolo abrindo a massa da pizza" loading="lazy" width="720" height="720"></figure>
+          <figure class="about-photo small"><img src="assets/img/bg-restaurante.webp" alt="Forno a lenha aceso" loading="lazy" width="420" height="420"></figure>
+          <img class="about-logo" src="assets/img/logo-256.webp" alt="" width="120" height="120" loading="lazy">
+        </div>
+        <div class="about-copy reveal">
+          <p class="eyebrow light"><span class="eyebrow-line"></span>Feita com carinho desde sempre</p>
+          <h2 class="section-title light" id="sobreTitle">Tradição de pizzaria, no ritmo da sua casa.</h2>
+          <p class="lead">A Figaro's nasceu em Palhoça com uma missão simples: servir pizzas generosas, recheadas de verdade, com atendimento de quem gosta do que faz. No salão você encontra <strong>rodízio de pizzas</strong> e <strong>buffet completo no almoço</strong> — e a mesma pizza vai quentinha até a sua porta.</p>
+          <ul class="about-points">
+            <li><span>🍕</span>Pizzas bem recheadas</li>
+            <li><span>🧀</span>Borda de requeijão inclusa</li>
+            <li><span>🥤</span>Refri incluso nas salgadas</li>
+            <li><span>🍫</span>Pizzas e calzones doces</li>
+            <li><span>🍝</span>Lasanhas artesanais</li>
+            <li><span>🍽️</span>Rodízio e buffet no salão</li>
+          </ul>
+          <p class="lunch" id="lunchInfo"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= DEPOIMENTOS (só aparece se houver) ======================= -->
+    <section class="section reviews" id="avaliacoes" aria-labelledby="reviewsTitle" hidden>
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-line"></span>Quem prova, volta</p>
+            <h2 class="section-title" id="reviewsTitle">O que dizem da gente</h2>
+          </div>
+          <div class="rating-big" id="ratingBig"></div>
+        </div>
+        <div class="reviews-grid" id="reviewsGrid"></div>
+      </div>
+    </section>
+
+    <!-- ======================= CONTATO ======================= -->
+    <section class="section contact" id="contato" aria-labelledby="contatoTitle">
+      <div class="container contact-grid">
+        <div class="contact-card reveal">
+          <p class="eyebrow"><span class="eyebrow-line"></span>Venha nos visitar</p>
+          <h2 class="section-title" id="contatoTitle">Onde estamos</h2>
+          <ul class="contact-list">
+            <li>
+              <span class="ci">📍</span>
+              <div><strong>Endereço</strong><p id="storeAddress">Av. Elza Lucchi, 1277 – Ponte do Imaruim, Palhoça – SC, 88130-600</p></div>
+            </li>
+            <li>
+              <span class="ci">📞</span>
+              <div><strong>Telefone / WhatsApp</strong><p><a id="storePhone" href="tel:+5548933410102">(48) 93341-0102</a></p></div>
+            </li>
+            <li>
+              <span class="ci">🕒</span>
+              <div><strong>Horários da pizzaria</strong><table class="hours" id="hoursTable"><tbody></tbody></table></div>
+            </li>
+          </ul>
+          <div class="contact-ctas">
+            <a class="btn btn-primary" id="directionsBtn" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&amp;destination=Figaro%27s%20Pizzaria%2C%20Av.%20Elza%20Lucchi%2C%201277%20-%20Palho%C3%A7a%2C%20SC">🧭 Como chegar</a>
+            <a class="btn btn-whats" id="whatsBtn" target="_blank" rel="noopener noreferrer" href="https://wa.me/5548933410102">WhatsApp</a>
+          </div>
+        </div>
+        <div class="map-frame reveal">
+          <button type="button" class="map-placeholder" id="mapLoad">
+            <span>🗺️</span>
+            <strong>Ver no mapa</strong>
+            <small>Carrega o Google Maps</small>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ======================= FOOTER ======================= -->
+  <footer class="site-footer">
+    <div class="tricolor" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <img src="assets/img/logo-256.webp" alt="Figaro's Pizzaria" width="96" height="96" loading="lazy">
+        <p id="footerTagline">Pizzaria e Restaurante em Palhoça, SC. Delivery, retirada, rodízio e buffet.</p>
+        <div class="socials" id="socials"></div>
+      </div>
+      <div>
+        <h3>Navegue</h3>
+        <ul>
+          <li><a href="#cardapio">Cardápio</a></li>
+          <li><a href="#destaques">Destaques</a></li>
+          <li><a href="#como-funciona">Como pedir</a></li>
+          <li><a href="#sobre">Sobre nós</a></li>
+          <li><a href="#contato">Contato</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Pagamento</h3>
+        <ul class="pay-tags" id="payTags"><li>PIX</li><li>Cartão</li><li>Dinheiro</li></ul>
+        <h3 class="mt">Contato</h3>
+        <p id="footerPhone">(48) 93341-0102</p>
+        <p id="footerAddress">Av. Elza Lucchi, 1277 – Palhoça/SC</p>
+      </div>
     </div>
-
-
-    <div class="footer-bottom">
-
-      <span id="footerYear"></span>
-
-      <span>
-        Feito com 🔥 em Palhoça, SC
-      </span>
-
+    <div class="container footer-bottom">
+      <span>© <span id="year">2026</span> Figaro's Pizzaria. Todos os direitos reservados.</span>
+      <span class="footer-links"><a href="creditos.html">Créditos das fotos</a> · <a href="admin/" rel="nofollow">Área do desenvolvedor</a></span>
     </div>
-
   </footer>
 
-
-
-  <!-- MODAL PRODUTO -->
-
-  <div
-    class="overlay"
-    id="productOverlay">
-
-    <div
-      class="backdrop"
-      data-close="product">
-    </div>
-
-    <div
-      class="modal-sheet"
-      id="productSheet">
-    </div>
-
-  </div>
-
-
-
-  <!-- CARRINHO -->
-
-  <div
-    class="cart-overlay"
-    id="cartOverlay">
-
-    <div
-      class="backdrop"
-      data-close="cart">
-    </div>
-
-    <div class="cart-drawer">
-
-      <div class="cart-head">
-
-        <h2>
-          🛒 Seu carrinho
-        </h2>
-
-        <button
-          data-close="cart"
-          aria-label="Fechar carrinho">
-
-          ✕
-
-        </button>
-
-      </div>
-
-
-      <div
-        class="cart-items"
-        id="cartItems">
-      </div>
-
-
-      <div
-        class="cart-summary"
-        id="cartSummary"
-        style="display:none;">
-
-        <div class="line">
-
-          <span>
-            Subtotal
-          </span>
-
-          <span
-            class="val"
-            id="cartSubtotal">
-          </span>
-
-        </div>
-
-        <p class="hint">
-          Taxa de entrega calculada no checkout.
-        </p>
-
-        <button
-          class="checkout-btn"
-          id="goCheckoutBtn">
-
-          Finalizar pedido
-
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-
-  <!-- CHECKOUT -->
-
-  <div
-    class="overlay"
-    id="checkoutOverlay">
-
-    <div
-      class="backdrop"
-      data-close="checkout">
-    </div>
-
-    <div
-      class="modal-sheet checkout-sheet"
-      id="checkoutSheet">
-    </div>
-
-  </div>
-
-
-
-  <!-- CARRINHO FLUTUANTE -->
-
-  <button
-    class="floating-cart-btn"
-    id="floatingCartBtn">
-
-    🛒
-
-    <span
-      id="floatingCartCount">
-    </span>
-
+  <!-- botão flutuante do carrinho (celular) -->
+  <button class="floating-cart" id="floatingCart" type="button" hidden>
+    <span class="fc-count" id="floatingCount">0</span>
+    <span>Ver carrinho</span>
+    <strong id="floatingTotal">R$ 0,00</strong>
   </button>
 
+  <!-- camadas (modais e gavetas) -->
+  <div class="layer" id="productLayer" hidden>
+    <div class="layer-backdrop" data-close></div>
+    <div class="dialog product-dialog" role="dialog" aria-modal="true" aria-labelledby="productTitle" id="productDialog"></div>
+  </div>
 
+  <div class="layer drawer-layer" id="cartLayer" hidden>
+    <div class="layer-backdrop" data-close></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" id="cartDrawer"></aside>
+  </div>
 
-  <script src="script.js"></script>
+  <div class="layer" id="checkoutLayer" hidden>
+    <div class="layer-backdrop" data-close></div>
+    <div class="dialog checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle" id="checkoutDialog"></div>
+  </div>
 
+  <div class="layer drawer-layer" id="ordersLayer" hidden>
+    <div class="layer-backdrop" data-close></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="ordersTitle" id="ordersDrawer"></aside>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <noscript><div class="noscript">Ative o JavaScript para ver o cardápio e fazer pedidos — ou chame a gente no WhatsApp: <a href="https://wa.me/5548933410102">(48) 93341-0102</a>.</div></noscript>
+
+  <script type="module" src="js/site/main.js"></script>
 </body>
 </html>

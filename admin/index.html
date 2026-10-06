@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel do desenvolvedor · Figaro's Pizzaria</title>
+  <link rel="icon" href="../assets/img/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/site.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin">
+  <!-- Login / primeiro acesso -->
+  <main class="auth" id="auth" hidden>
+    <div class="auth-card">
+      <img src="../assets/img/logo-256.webp" alt="Figaro's Pizzaria" width="110" height="110">
+      <h1 id="authTitle">Área do desenvolvedor</h1>
+      <p id="authSub">Entre com sua conta para editar o site.</p>
+      <form id="authForm" novalidate></form>
+      <a class="back-site" href="../">← Voltar ao site</a>
+    </div>
+  </main>
+
+  <!-- Aplicação -->
+  <div class="app" id="app" hidden>
+    <aside class="side" id="side">
+      <a class="side-brand" href="#painel"><img src="../assets/img/logo-256.webp" alt="" width="44" height="44"><span><strong>Figaro's</strong><small>Painel</small></span></a>
+      <nav class="side-nav" aria-label="Seções do painel">
+        <a href="#painel" data-route="painel"><span>📊</span>Painel</a>
+        <a href="#pedidos" data-route="pedidos"><span>🧾</span>Pedidos <b class="count" id="pendingCount" hidden>0</b></a>
+        <a href="#cardapio" data-route="cardapio"><span>🍕</span>Cardápio</a>
+        <a href="#loja" data-route="loja"><span>🏪</span>Loja</a>
+        <a href="#historico" data-route="historico"><span>🕘</span>Histórico</a>
+        <a href="#conta" data-route="conta"><span>🔐</span>Conta</a>
+      </nav>
+      <div class="side-foot">
+        <a class="btn btn-sm btn-ghost light" href="../" target="_blank" rel="noopener">Ver site ↗</a>
+        <div class="who"><span id="whoName">—</span><button type="button" class="link-btn" id="logoutBtn">Sair</button></div>
+      </div>
+    </aside>
+    <div class="main">
+      <header class="topbar">
+        <button type="button" class="icon-btn side-toggle" id="sideToggle" aria-label="Abrir menu">☰</button>
+        <h1 id="viewTitle">Painel</h1>
+        <span class="status-pill" id="storeStatus" data-open="unknown"><i></i><span>…</span></span>
+      </header>
+      <section class="view" id="view" tabindex="-1"></section>
+    </div>
+  </div>
+
+  <div class="layer" id="modalLayer" hidden>
+    <div class="layer-backdrop" data-close></div>
+    <div class="dialog admin-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle" id="modal"></div>
+  </div>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script type="module" src="../js/admin/main.js"></script>
+</body>
+</html>
