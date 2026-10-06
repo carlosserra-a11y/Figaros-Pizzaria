@@ -44,7 +44,8 @@ function particleCanvas(canvas, { count, color, rise, size, glow = false, onlyWh
     ctx.shadowBlur = 0;
     raf = requestAnimationFrame(tick);
   };
-  const start = () => { if (!running && !document.hidden) { running = true; raf = requestAnimationFrame(tick); } };
+  let disabled = false;
+  const start = () => { if (!running && !document.hidden && !disabled) { running = true; raf = requestAnimationFrame(tick); } };
   const stop = () => { running = false; cancelAnimationFrame(raf); };
   resize();
   for (let i = 0; i < count; i++) parts.push(spawn({}, true));
@@ -53,11 +54,16 @@ function particleCanvas(canvas, { count, color, rise, size, glow = false, onlyWh
   if (onlyWhenVisible) {
     new IntersectionObserver(([e]) => { onlyWhenVisible.visible = e.isIntersecting; e.isIntersecting ? start() : stop(); }).observe(onlyWhenVisible.el);
   } else start();
+  return { disable() { disabled = true; stop(); ctx.clearRect(0, 0, w, h); } };
 }
+
+let flour = null;
+/** O fundo 3D substitui a farinha 2D: desliga o laço dela para não gastar processamento. */
+export const disableFlour = () => flour?.disable();
 
 export function initBackgroundFx() {
   const small = window.innerWidth < 640;
-  particleCanvas(document.getElementById("fxCanvas"), { count: small ? 18 : 38, color: ["#fffdf8", "#e3a93b", "#ebdfc4"], rise: 0.6, size: [1.2, 3.4] });
+  flour = particleCanvas(document.getElementById("fxCanvas"), { count: small ? 18 : 38, color: ["#fffdf8", "#e3a93b", "#ebdfc4"], rise: 0.6, size: [1.2, 3.4] });
   const about = document.getElementById("sobre");
   particleCanvas(document.getElementById("emberCanvas"), { count: small ? 26 : 60, color: ["#ff8a3d", "#e3a93b", "#ff5a1f", "#c0463d"], rise: 1.4, size: [1, 2.8], glow: true, onlyWhenVisible: { el: about, visible: false } });
 }

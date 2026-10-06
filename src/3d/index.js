@@ -21,11 +21,12 @@ export function init3D({ hero, box, background, photoUrl, logoUrl } = {}) {
   if (!tier) return { enabled: false, reason: "sem WebGL" };
   const reduced = prefersReducedMotion();
   const started = [];
+  const scenes = {};
 
   if (hero) {
     try {
       const canvas = makeCanvas(hero, "hero-3d");
-      createHeroScene({
+      scenes.hero = createHeroScene({
         container: hero, canvas, photoUrl, tier,
         onReady: () => hero.classList.add("is-3d"),
         onFail: () => { hero.classList.remove("is-3d"); canvas.remove(); },
@@ -37,7 +38,7 @@ export function init3D({ hero, box, background, photoUrl, logoUrl } = {}) {
   if (box) {
     try {
       const canvas = makeCanvas(box, "box-3d");
-      createBoxScene({ container: box, canvas, photoUrl, logoUrl, tier, onFail: () => { box.classList.remove("is-3d"); canvas.remove(); } });
+      scenes.box = createBoxScene({ container: box, canvas, photoUrl, logoUrl, tier, onFail: () => { box.classList.remove("is-3d"); canvas.remove(); } });
       box.classList.add("is-3d");
       started.push("box");
     } catch (e) { console.warn("[3D] caixa desligada:", e); }
@@ -45,10 +46,12 @@ export function init3D({ hero, box, background, photoUrl, logoUrl } = {}) {
 
   if (background && !reduced) {
     try {
-      createBackgroundScene({ canvas: background, tier, onFail: () => document.documentElement.classList.remove("bg-3d") });
+      scenes.background = createBackgroundScene({ canvas: background, tier, onFail: () => document.documentElement.classList.remove("bg-3d") });
       document.documentElement.classList.add("bg-3d");
       started.push("fundo");
     } catch (e) { console.warn("[3D] fundo desligado:", e); }
   }
+  // ?debug3d na URL: permite desenhar quadros manualmente (testes com a aba em segundo plano)
+  if (new URLSearchParams(location.search).has("debug3d")) window.__fig3d = scenes;
   return { enabled: started.length > 0, started, tier };
 }

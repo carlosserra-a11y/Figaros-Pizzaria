@@ -86,9 +86,29 @@ export function observeCards(root) {
     e.target.classList.add("seen");
     cardObserver.unobserve(e.target);
   }), { rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
+  const vh = window.innerHeight;
   cards.forEach((c, i) => {
+    // cartões que já estão na tela aparecem na hora; só os de baixo esperam a rolagem
+    if (c.getBoundingClientRect().top < vh * 0.92) { c.classList.add("seen"); return; }
     c.style.setProperty("--d", `${(i % 4) * 70}ms`);
     c.classList.add("pre");
     cardObserver.observe(c);
   });
+  scheduleSafety();
 }
+
+/** Garantia: se o aviso de "entrou na tela" atrasar, nenhum cartão visível fica escondido. */
+let safetyTimer = 0;
+function scheduleSafety() {
+  clearTimeout(safetyTimer);
+  safetyTimer = setTimeout(() => {
+    const vh = window.innerHeight;
+    document.querySelectorAll(".card.pre:not(.seen)").forEach((c) => {
+      if (c.getBoundingClientRect().top < vh) { c.classList.add("seen"); cardObserver?.unobserve(c); }
+    });
+    document.querySelectorAll(".reveal:not(.in)").forEach((el) => {
+      if (el.getBoundingClientRect().top < vh) el.classList.add("in");
+    });
+  }, 900);
+}
+window.addEventListener("scroll", () => { if (document.querySelector(".card.pre:not(.seen), .reveal:not(.in)")) scheduleSafety(); }, { passive: true });

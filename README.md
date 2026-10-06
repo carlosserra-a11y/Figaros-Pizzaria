@@ -11,7 +11,12 @@ Site oficial da **Figaro's Pizzaria** (Av. Elza Lucchi, 1277 – Ponte do Imarui
 - **Banco de dados** (SQLite) com o histórico de **todos os pedidos**, status e **todas as alterações** do cardápio.
 - **Acompanhamento do pedido** pelo cliente ("Meus pedidos") e "Pedir de novo".
 - **Painel do desenvolvedor** (`/admin/`) com usuário e senha para cadastrar novos sabores, pizzas, produtos e bebidas, mudar preços, horários, taxa de entrega e ver os pedidos chegando (com aviso sonoro).
-- Animações (farinha no ar, brasas, ingredientes flutuando, cartões 3D, confete), acessível e responsivo.
+- **Modelos 3D** (three.js, feitos em código, sem downloads extras):
+  - **pizza fatiada no topo** com a foto real por cima, tábua de madeira e vapor — ao rolar, as fatias se abrem e uma é puxada com fios de queijo;
+  - **ingredientes flutuando no fundo** da página em várias profundidades (parallax de câmera), girando com a velocidade da rolagem;
+  - **caixa de pizza da Figaro's** com a logo impressa, que abre conforme a rolagem na seção "Como pedir".
+- Animações de rolagem (camadas de profundidade, barra de progresso, faixa de sabores reativa, cartões que entram em 3D), brasas, confete.
+- Sem WebGL, com "reduzir movimento" ou em caso de erro, o site cai sozinho para a versão 2D. As cenas pausam fora da tela e usam menos qualidade em aparelhos fracos.
 
 ---
 
@@ -105,6 +110,8 @@ css/site.css            identidade visual (cores da logo) e layout
 css/admin.css           layout do painel
 js/shared/pricing.js    REGRAS DE PREÇO (usadas pelo site E pelo servidor)
 js/site/*.js            site: api, cardápio, montador, carrinho, checkout, pedidos, animações
+js/site/3d.js           modelos 3D (gerado a partir de src/3d com npm run build:3d)
+src/3d/                 código-fonte dos modelos 3D
 js/admin/*.js           painel: login, pedidos, cardápio, loja, histórico, conta
 data/menu.json          cardápio inicial (semente do banco) e versão do GitHub Pages
 data/image-credits.json autor e licença de cada foto
@@ -116,6 +123,29 @@ server/security.js      senhas, sessões, limites de tentativas, cabeçalhos de 
 server/validate.js      validação de tudo que chega na API
 tests/                  testes automáticos (npm test)
 ```
+
+## 🧊 Modelos 3D
+
+O código 3D fica em `src/3d/` e é empacotado (com só o necessário do three.js) em `js/site/3d.js`:
+
+```bash
+npm install
+npm run build:3d
+```
+
+Rode o build sempre que mudar algo em `src/3d/` e faça commit do `js/site/3d.js` gerado (o GitHub Pages usa esse arquivo).
+
+| Arquivo | O que faz |
+|---|---|
+| `src/3d/pizza.js` | pizza fatiada (foto real no topo, corte com massa/molho/queijo, borda, fios de queijo) |
+| `src/3d/ingredients.js` | manjericão, tomate, azeitona, cogumelo, pepperoni, queijo, pimenta, cebola |
+| `src/3d/hero.js` | cena do topo |
+| `src/3d/background.js` | fundo com ingredientes em profundidade |
+| `src/3d/box.js` | caixa da Figaro's que abre com a rolagem |
+| `src/3d/textures.js` | texturas geradas no navegador (madeira, borda, papelão com a logo…) |
+| `src/3d/core.js` | renderizador, iluminação, laço único de animação, detecção de aparelho |
+
+Para testar as cenas com a aba em segundo plano, abra o site com `?debug3d` no endereço.
 
 ## 🔒 Segurança
 

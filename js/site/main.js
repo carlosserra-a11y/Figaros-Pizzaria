@@ -9,7 +9,7 @@ import { initMenu } from "./menu-view.js";
 import { initBuilder, openBuilder } from "./builder.js";
 import { initCheckout, openCart, renderCartBadge, onStoreStatusChange } from "./checkout.js";
 import { initOrders } from "./orders.js";
-import { initBackgroundFx, initFloaters, initMagnetic, observeReveal, flyToCart, toast } from "./fx.js";
+import { initBackgroundFx, initFloaters, initMagnetic, observeReveal, flyToCart, toast, disableFlour } from "./fx.js";
 import { closeLayer } from "./dialog.js";
 import { initScrollFx } from "./scrollfx.js";
 
@@ -199,6 +199,7 @@ function load3D() {
         logoUrl: new URL("assets/img/logo.png", document.baseURI).href,
       });
       document.documentElement.classList.toggle("has-3d", r.enabled);
+      if (r.started?.includes("fundo")) disableFlour();
     })
     .catch((e) => console.warn("3D indisponível:", e));
   if ("requestIdleCallback" in window) requestIdleCallback(go, { timeout: 1500 });

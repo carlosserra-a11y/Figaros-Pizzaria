@@ -20,7 +20,7 @@ export function createBackgroundScene({ canvas, tier, onFail }) {
   const renderer = createRenderer(canvas, { ...tier, maxDpr: Math.min(tier.maxDpr, 1.5) });
   studioEnvironment(renderer, scene, 0.9);
   const cream = new Color(0xf4ecd9);
-  scene.fog = new Fog(cream, 9, 30);
+  scene.fog = new Fog(cream, 13, 34);
   const camera = new PerspectiveCamera(FOV, 1, 0.1, 60);
   camera.position.z = CAM_Z;
 
@@ -33,7 +33,7 @@ export function createBackgroundScene({ canvas, tier, onFail }) {
   const reduced = prefersReducedMotion();
 
   const kinds = Object.keys(INGREDIENTS);
-  const perKind = tier.low ? 2 : tier.small ? 3 : 4;
+  const perKind = tier.low ? 3 : tier.small ? 4 : 6;
   const dummy = new Object3D();
   const meshes = [];
   const items = [];
@@ -50,11 +50,12 @@ export function createBackgroundScene({ canvas, tier, onFail }) {
         mesh, i,
         side: Math.random() < 0.5 ? -1 : 1,
         lane: Math.random(),          // posição vertical ao longo da página (0–1)
-        z: -2 - Math.random() * 14,   // profundidade
-        scale: 0.55 + Math.random() * 0.55,
+        z: 2.5 - Math.random() * 10,  // profundidade (mais perto = maior e mais rápido)
+        scale: 0.8 + Math.random() * 0.7,
         rot: new Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6),
         spin: new Vector3((Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.4),
         bob: Math.random() * Math.PI * 2,
+        xr: Math.random(),
         x: 0, y: 0,
       });
     }
@@ -84,8 +85,8 @@ export function createBackgroundScene({ canvas, tier, onFail }) {
     for (const it of items) {
       const depthScale = (CAM_Z - it.z) / CAM_Z; // planos mais distantes mostram uma área maior
       // laterais: deixa o centro livre para o texto
-      const edge = viewW < 700 ? 0.62 : 0.5;
-      it.x = it.side * halfW0 * depthScale * (edge + Math.random() * (1 - edge) * 0.95);
+      const edge = viewW < 700 ? 0.86 : 0.5;
+      it.x = it.side * halfW0 * depthScale * (edge + it.xr * (1 - edge) * 0.95);
       it.y = halfH0 * 0.8 - it.lane * (travel + halfH0 * 1.6);
     }
   }
