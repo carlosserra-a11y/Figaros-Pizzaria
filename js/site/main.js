@@ -7,10 +7,11 @@ import { indexMenu, storeStatus, priceItem } from "../shared/pricing.js";
 import { cart } from "./cart.js";
 import { initMenu } from "./menu-view.js";
 import { initBuilder, openBuilder } from "./builder.js";
-import { initCheckout, openCart, renderCartBadge } from "./checkout.js";
+import { initCheckout, openCart, renderCartBadge, onStoreStatusChange } from "./checkout.js";
 import { initOrders } from "./orders.js";
 import { initBackgroundFx, initFloaters, initMagnetic, observeReveal, flyToCart, toast } from "./fx.js";
 import { closeLayer } from "./dialog.js";
+import { initScrollFx } from "./scrollfx.js";
 
 const DAYS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
@@ -59,14 +60,25 @@ function initChrome() {
   }, true);
 }
 
-/* ---------- Dados da loja (status, horários, contato) ---------- */
-function renderStore(menu) {
-  const s = menu.store;
-  const status = menu.status || storeStatus(s);
+/* ---------- Status aberto/fechado (atualiza a cada minuto) ---------- */
+function renderStatus(menu) {
+  const status = menu.status || storeStatus(menu.store);
   const pill = $("#statusPill");
   pill.dataset.open = String(status.open);
   setHTML(pill, html`<i></i><span>${status.label}${status.detail ? ` · ${status.detail}` : ""}</span>`);
   pill.title = `${status.label}${status.detail ? " — " + status.detail : ""}`;
+  const today = new Intl.DateTimeFormat("en-US", { timeZone: "America/Sao_Paulo", weekday: "short" }).format(new Date());
+  const todayIdx = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(today);
+  setHTML($("#hoursTable tbody"), [1, 2, 3, 4, 5, 6, 0].map((d) => {
+    const h = (menu.store.hours || []).find((x) => x.day === d);
+    return html`<tr class="${d === todayIdx ? "today" : ""}"><td>${DAYS[d]}${d === todayIdx ? " (hoje)" : ""}</td><td>${!h || h.closed ? "Fechado" : `${h.open} às ${h.close}`}</td></tr>`;
+  }));
+}
+
+/* ---------- Dados da loja (contato, avaliações) — desenhados uma vez ---------- */
+function renderStore(menu) {
+  const s = menu.store;
+  renderStatus(menu);
 
   if (s.announcement) { const a = $("#announcement"); a.textContent = s.announcement; a.hidden = false; }
   if (s.address) { $("#storeAddress").textContent = s.address; $("#footerAddress").textContent = s.address; }
@@ -90,13 +102,8 @@ function renderStore(menu) {
   if (s.whatsapp) socials.push(html`<a href="https://wa.me/${s.whatsapp}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">${icons.whats}</a>`);
   setHTML($("#socials"), socials);
 
-  const today = new Intl.DateTimeFormat("en-US", { timeZone: "America/Sao_Paulo", weekday: "short" }).format(new Date());
-  const todayIdx = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(today);
-  const order = [1, 2, 3, 4, 5, 6, 0];
-  setHTML($("#hoursTable tbody"), order.map((d) => {
-    const h = (s.hours || []).find((x) => x.day === d);
-    return html`<tr class="${d === todayIdx ? "today" : ""}"><td>${DAYS[d]}${d === todayIdx ? " (hoje)" : ""}</td><td>${!h || h.closed ? "Fechado" : `${h.open} às ${h.close}`}</td></tr>`;
-  }));
+  const savory = (menu.flavors || []).filter((f) => f.productId === "pizza-salgada").length;
+  if (savory) $("#flavorCount").textContent = savory;
 
   if (s.rating) {
     const r = $("#heroRating");
@@ -125,6 +132,7 @@ async function start() {
   initFloaters();
   initMagnetic();
   observeReveal();
+  initScrollFx();
 
   let menu;
   try {
@@ -166,10 +174,35 @@ async function start() {
   if (m && apiState.online) import("./orders.js").then((o) => o.openOrders(m[1].toUpperCase()));
 
   // Atualiza o status (aberto/fechado) a cada minuto
-  setInterval(() => { menu.status = storeStatus(menu.store); renderStore(menu); }, 60_000);
+  setInterval(() => {
+    const was = menu.status?.open;
+    menu.status = storeStatus(menu.store);
+    renderStatus(menu);
+    if (was !== menu.status.open) onStoreStatusChange();
+  }, 60_000);
+
+  // Modelos 3D: carregados depois que a página já está na tela (não atrasam o cardápio)
+  load3D();
 
   window.addEventListener("pageshow", (e) => { if (e.persisted) renderCartBadge(); });
   window.FIGAROS = { closeAll: () => $$(".layer:not([hidden])").forEach((l) => closeLayer(l)) };
+}
+
+function load3D() {
+  const go = () => import("./3d.js")
+    .then((m) => {
+      const r = m.init3D({
+        hero: $("#heroVisual"),
+        box: $("#box3d"),
+        background: $("#bgCanvas"),
+        photoUrl: new URL("assets/img/hero-pizza.webp", document.baseURI).href,
+        logoUrl: new URL("assets/img/logo.png", document.baseURI).href,
+      });
+      document.documentElement.classList.toggle("has-3d", r.enabled);
+    })
+    .catch((e) => console.warn("3D indisponível:", e));
+  if ("requestIdleCallback" in window) requestIdleCallback(go, { timeout: 1500 });
+  else setTimeout(go, 400);
 }
 
 start();

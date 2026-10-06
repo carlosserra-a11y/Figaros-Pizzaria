@@ -69,7 +69,7 @@ function renderCart() {
   setHTML(drawer, html`
     <div class="drawer-head"><h2 id="cartTitle">Seu pedido</h2><button type="button" class="icon-btn" data-close aria-label="Fechar carrinho">×</button></div>
     <div class="drawer-body">
-      ${!items.length ? html`<div class="cart-empty"><span class="big">🍕</span><h3>Seu carrinho está vazio</h3><p>Bora escolher uma pizza?</p><a class="btn btn-primary" href="#cardapio" data-close>Ver cardápio</a></div>` : ""}
+      ${!items.length ? html`<div class="cart-empty"><img class="mascot" src="assets/img/chef.webp" alt="" width="120" height="120"><h3>Seu carrinho está vazio</h3><p>O Figaro já acendeu o forno — bora escolher uma pizza?</p><a class="btn btn-primary" href="#cardapio" data-close>Ver cardápio</a></div>` : ""}
       ${items.map((it, i) => {
         const p = totals.items[i];
         return html`<div class="cart-item">
@@ -117,6 +117,13 @@ $("#cartDrawer").addEventListener("click", (e) => {
   if (b.id === "clearCart") { if (confirm("Esvaziar o carrinho?")) cart.clear(); return; }
   if (b.id === "goCheckout") { closeLayer($("#cartLayer"), { silent: true }); setTimeout(openCheckout, 220); }
 });
+
+/** Loja abriu/fechou enquanto o checkout estava aberto: redesenha sem perder o que foi digitado. */
+export function onStoreStatusChange() {
+  if (!isOpen($("#checkoutLayer")) || ck.done || ck.sending) return;
+  readForm();
+  renderCheckout();
+}
 
 /* ---------- Checkout ---------- */
 export function openCheckout() {

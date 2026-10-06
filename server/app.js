@@ -2,6 +2,7 @@
    Aplicação Express: site estático + API pública + API do painel.
    ============================================================ */
 import express from "express";
+import compression from "compression";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
@@ -17,6 +18,12 @@ import { indexMenu, priceCart, storeStatus, buildWhatsAppText, ORDER_STATUS, toC
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
+/** Meia-noite (horário de São Paulo, UTC−3, sem horário de verão desde 2019) do dia de `d`. */
+export function spMidnight(d) {
+  const day = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(d);
+  return new Date(`${day}T00:00:00-03:00`);
+}
+
 export function createApp({ dataDir, setupCode = null, corsOrigins = [], trustProxy = false, secureCookies = false, logger = console } = {}) {
   const store = openDatabase(dataDir);
   const uploadsDir = join(dataDir, "uploads");
@@ -27,6 +34,7 @@ export function createApp({ dataDir, setupCode = null, corsOrigins = [], trustPr
   app.disable("x-powered-by");
   if (trustProxy) app.set("trust proxy", trustProxy === true ? 1 : trustProxy);
   app.use(securityHeaders);
+  app.use(compression());
 
   /* ---------------- Arquivos estáticos (lista branca) ---------------- */
   const staticOpts = (maxAge) => ({ maxAge, fallthrough: true, index: false, dotfiles: "deny" });
@@ -50,8 +58,8 @@ export function createApp({ dataDir, setupCode = null, corsOrigins = [], trustPr
   const limits = {
     login: rateLimiter({ windowMs: 15 * 60_000, max: 20 }),
     loginUser: rateLimiter({ windowMs: 15 * 60_000, max: 8 }),
-    orders: rateLimiter({ windowMs: 10 * 60_000, max: 10 }),
-    tracking: rateLimiter({ windowMs: 60_000, max: 90 }),
+    orders: rateLimiter({ windowMs: 10 * 60_000, max: 40 }),
+    tracking: rateLimiter({ windowMs: 60_000, max: 400 }),
   };
 
   // CORS apenas para a API pública e apenas para origens configuradas (ex.: GitHub Pages).
@@ -428,8 +436,9 @@ export function createApp({ dataDir, setupCode = null, corsOrigins = [], trustPr
 
   adm.get("/stats", (req, res) => {
     const days = Math.min(365, Math.max(1, Number(req.query.days) || 7));
-    const since = new Date(); since.setHours(0, 0, 0, 0); since.setDate(since.getDate() - (days - 1));
-    const today = new Date(); today.setHours(0, 0, 0, 0);
+    // "hoje" e os dias do gráfico seguem o horário de Brasília, não o do servidor
+    const today = spMidnight(new Date());
+    const since = new Date(today.getTime() - (days - 1) * 864e5);
     const m = store.getMenu();
     const names = new Map([...m.products, ...m.flavors].map((x) => [x.id, x.name]));
     const s = store.stats(since.toISOString());
@@ -504,6 +513,6 @@ export function createApp({ dataDir, setupCode = null, corsOrigins = [], trustPr
 function notFoundPage() {
   return `<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Página não encontrada · Figaro's Pizzaria</title><link rel="stylesheet" href="/css/site.css">
-<body class="page-404"><main class="nf"><img src="/assets/img/logo.png" alt="Figaro's Pizzaria" width="160" height="160">
+<body class="page-404"><main class="nf"><img class="mascot" src="/assets/img/chef.webp" alt="" width="160" height="160" style="width:160px;height:160px">
 <h1>Ops! Essa fatia sumiu.</h1><p>A página que você procurou não existe.</p><a class="btn btn-primary" href="/">Voltar ao cardápio</a></main></body></html>`;
 }

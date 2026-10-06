@@ -42,6 +42,8 @@
 <body>
   <a class="skip-link" href="#cardapio">Pular para o cardápio</a>
   <canvas class="fx-canvas" id="fxCanvas" aria-hidden="true"></canvas>
+  <canvas class="bg-canvas" id="bgCanvas" aria-hidden="true"></canvas>
+  <div class="scroll-progress" aria-hidden="true"><i id="scrollProgress"></i></div>
 
   <div class="announcement" id="announcement" hidden></div>
 
@@ -95,10 +97,10 @@
     <section class="hero" aria-labelledby="heroTitle">
       <div class="hero-bg" aria-hidden="true"></div>
       <div class="container hero-inner">
-        <div class="hero-copy">
+        <div class="hero-copy" data-depth="0.12">
           <p class="eyebrow"><span class="eyebrow-line"></span>Forno aceso em Palhoça, SC</p>
-          <h1 id="heroTitle">A pizza do <span class="hl-red">Figaro's</span>, quentinha <span class="hl-green">na sua porta.</span></h1>
-          <p class="hero-sub">57 sabores salgados, pizzas doces, calzones, lasanhas e esfihas. <strong>Toda pizza salgada já vem com borda de requeijão e refrigerante.</strong></p>
+          <h1 id="heroTitle">A pizza do <span class="type-logo red">Figaro's</span>, quentinha <span class="hl-green type-logo">na sua porta.</span></h1>
+          <p class="hero-sub"><span id="flavorCount">57</span> sabores salgados, pizzas doces, calzones, lasanhas e esfihas. <strong>Toda pizza salgada já vem com borda de requeijão e refrigerante.</strong></p>
           <div class="hero-ctas">
             <a class="btn btn-primary btn-lg" href="#cardapio" data-magnetic>
               Pedir agora
@@ -120,9 +122,17 @@
             </div>
             <span class="steam s1"></span><span class="steam s2"></span><span class="steam s3"></span>
           </div>
-          <img class="hero-logo" src="assets/img/logo-256.webp" alt="" width="150" height="150">
+          <div class="seal" data-depth="-0.18">
+            <svg class="seal-ring" viewBox="0 0 200 200" aria-hidden="true">
+              <defs><path id="sealPath" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/></defs>
+              <circle cx="100" cy="100" r="97" class="seal-bg"/>
+              <circle cx="100" cy="100" r="93" class="seal-line"/>
+              <text><textPath href="#sealPath" textLength="510">FIGARO'S PIZZA • FORNO ACESO • PALHOÇA · SC •</textPath></text>
+            </svg>
+            <img class="seal-logo" src="assets/img/logo-256.webp" alt="" width="150" height="150">
+          </div>
           <div class="floaters" id="floaters"></div>
-          <div class="hero-tag">
+          <div class="hero-tag" data-depth="-0.3">
             <strong>Borda + refri</strong>
             <span>inclusos em toda pizza salgada</span>
           </div>
@@ -186,29 +196,38 @@
 
     <!-- ======================= COMO FUNCIONA ======================= -->
     <section class="section steps" id="como-funciona" aria-labelledby="stepsTitle">
-      <div class="container">
-        <p class="eyebrow center"><span class="eyebrow-line"></span>Simples assim</p>
-        <h2 class="section-title center" id="stepsTitle">Como pedir</h2>
-        <ol class="steps-grid">
-          <li class="step reveal">
-            <span class="step-num">1</span>
-            <div class="step-ico">🍕</div>
-            <h3>Escolha</h3>
-            <p>Monte a pizza do seu jeito — até 3 sabores na Gigante — ou pegue um combo.</p>
-          </li>
-          <li class="step reveal">
-            <span class="step-num">2</span>
-            <div class="step-ico">✅</div>
-            <h3>Confirme</h3>
-            <p>Finalize no site e envie o resumo pronto para o nosso WhatsApp com um toque.</p>
-          </li>
-          <li class="step reveal">
-            <span class="step-num">3</span>
-            <div class="step-ico">🛵</div>
-            <h3>Acompanhe</h3>
-            <p>Veja quando o pedido entra no forno e sai para entrega, em “Meus pedidos”.</p>
-          </li>
-        </ol>
+      <div class="container steps-layout">
+        <div class="box-stage" id="box3d">
+          <img class="box-fallback" src="assets/img/chef.webp" alt="" width="320" height="320" loading="lazy">
+          <p class="box-caption" aria-hidden="true">Role a página para abrir a caixa</p>
+        </div>
+        <div class="steps-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span>Simples assim</p>
+          <h2 class="section-title" id="stepsTitle" data-depth="0.06">Do forno direto <span class="type-logo green">pra sua mesa</span></h2>
+          <ol class="steps-list">
+            <li class="step reveal">
+              <span class="step-num">1</span>
+              <div>
+                <h3>Escolha</h3>
+                <p>Monte a pizza do seu jeito — até 3 sabores na Gigante — ou pegue um combo.</p>
+              </div>
+            </li>
+            <li class="step reveal">
+              <span class="step-num">2</span>
+              <div>
+                <h3>Confirme</h3>
+                <p>Finalize no site e envie o resumo pronto para o nosso WhatsApp com um toque.</p>
+              </div>
+            </li>
+            <li class="step reveal">
+              <span class="step-num">3</span>
+              <div>
+                <h3>Acompanhe</h3>
+                <p>Veja quando o pedido entra no forno e sai para entrega, em “Meus pedidos”.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
       </div>
     </section>
 
@@ -217,9 +236,9 @@
       <canvas class="ember-canvas" id="emberCanvas" aria-hidden="true"></canvas>
       <div class="container about-grid">
         <div class="about-media reveal">
-          <figure class="about-photo main"><img src="assets/img/bg-about.webp" alt="Pizzaiolo abrindo a massa da pizza" loading="lazy" width="720" height="720"></figure>
-          <figure class="about-photo small"><img src="assets/img/bg-restaurante.webp" alt="Forno a lenha aceso" loading="lazy" width="420" height="420"></figure>
-          <img class="about-logo" src="assets/img/logo-256.webp" alt="" width="120" height="120" loading="lazy">
+          <figure class="about-photo main" data-depth="0.1"><img src="assets/img/bg-about.webp" alt="Pizzaiolo abrindo a massa da pizza" loading="lazy" width="720" height="720"></figure>
+          <figure class="about-photo small" data-depth="-0.16"><img src="assets/img/bg-restaurante.webp" alt="Forno a lenha aceso" loading="lazy" width="420" height="420"></figure>
+          <img class="about-logo" src="assets/img/chef.webp" alt="" width="120" height="120" loading="lazy" data-depth="-0.3">
         </div>
         <div class="about-copy reveal">
           <p class="eyebrow light"><span class="eyebrow-line"></span>Feita com carinho desde sempre</p>

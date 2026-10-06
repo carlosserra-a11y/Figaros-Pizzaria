@@ -66,7 +66,7 @@ function renderList() {
   setHTML($("#ordersDrawer"), html`
     <div class="drawer-head"><h2 id="ordersTitle">Meus pedidos</h2><button type="button" class="icon-btn" data-close aria-label="Fechar">×</button></div>
     <div class="drawer-body">
-      ${!list.length ? html`<div class="cart-empty"><span class="big">🧾</span><h3>Nenhum pedido ainda</h3><p>Seus pedidos feitos neste aparelho aparecem aqui.</p></div>` : ""}
+      ${!list.length ? html`<div class="cart-empty"><img class="mascot" src="assets/img/chef.webp" alt="" width="120" height="120"><h3>Nenhum pedido ainda</h3><p>Seus pedidos feitos neste aparelho aparecem aqui.</p></div>` : ""}
       ${list.map((o) => html`<div class="order-card">
         <div class="top"><span class="code">#${o.code}</span>${o.online ? html`<span class="st ${o.status}">${ORDER_STATUS[o.status]?.label || o.status}</span>` : html`<span class="st">Enviado pelo WhatsApp</span>`}</div>
         <small>${timeAgo(o.createdAt)} · ${brlC(o.totalCents)}</small>

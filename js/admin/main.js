@@ -129,7 +129,7 @@ async function renderDashboard(view) {
   const byDay = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
+    const key = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(d);
     const hit = s.period.byDay.find((x) => x.day === key);
     byDay.push({ label: d.toLocaleDateString("pt-BR", days > 14 ? { day: "2-digit" } : { weekday: "short", day: "2-digit" }), orders: hit?.orders || 0, revenue: hit?.revenue || 0 });
   }

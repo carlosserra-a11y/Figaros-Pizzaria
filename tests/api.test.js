@@ -169,3 +169,10 @@ test("arquivos internos do servidor não são servidos", async () => {
     assert.equal(r.status, 404, p);
   }
 });
+
+test("o dia do painel segue o horário de Brasília", async () => {
+  const { spMidnight } = await import("../server/app.js");
+  // 22h de 06/10 em Brasília = 01h UTC de 07/10 → ainda é dia 06
+  assert.equal(spMidnight(new Date("2026-10-07T01:00:00Z")).toISOString(), "2026-10-06T03:00:00.000Z");
+  assert.equal(spMidnight(new Date("2026-10-07T03:30:00Z")).toISOString(), "2026-10-07T03:00:00.000Z");
+});

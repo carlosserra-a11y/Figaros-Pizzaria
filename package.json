@@ -10,9 +10,15 @@
   "scripts": {
     "start": "node --disable-warning=ExperimentalWarning server/index.js",
     "dev": "node --disable-warning=ExperimentalWarning --watch server/index.js",
-    "test": "node --disable-warning=ExperimentalWarning --test \"tests/*.test.js\""
+    "test": "node --disable-warning=ExperimentalWarning --test \"tests/*.test.js\"",
+    "build:3d": "esbuild src/3d/index.js --bundle --format=esm --minify --target=es2020 --legal-comments=none --outfile=js/site/3d.js"
   },
   "dependencies": {
+    "compression": "^1.8.2",
     "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "three": "^0.186.1"
   }
 }

@@ -3,6 +3,7 @@ import { html, raw, $, $$, setHTML, brl, norm, debounce } from "./util.js";
 import { imgUrl } from "./api.js";
 import { flavorsOf, minFlavorPrice } from "../shared/pricing.js";
 import { attachTilt } from "./fx.js";
+import { observeCards } from "./scrollfx.js";
 
 const TAG_LABELS = { tradicional: "Tradicionais", especial: "Especiais", frango: "Frango", carnes: "Carnes", "frutos-do-mar": "Frutos do mar", queijos: "Queijos", vegetariana: "Vegetarianas", picante: "Picantes" };
 const view = { idx: null, query: "", filters: {}, onOpen: null, onQuickAdd: null };
@@ -129,6 +130,7 @@ export function renderMenu() {
     setHTML(body, groups.map((g) => html`<section class="cat-block" id="cat-${g.c.id}" data-cat-block="${g.c.id}">
       <div class="cat-head"><h3><span aria-hidden="true">${g.c.icon}</span>${g.c.name}</h3><p>${g.list.length} resultado${g.list.length > 1 ? "s" : ""}</p></div>
       <div class="grid">${g.list.map((e, i) => cardHtml(e, i))}</div></section>`));
+    observeCards(body);
     return;
   }
   renderTabs(cats);
@@ -142,6 +144,7 @@ export function renderMenu() {
       <div class="grid${c.id === "bebidas" ? " compact" : ""}">${list.map((e, i) => cardHtml(e, i))}</div>
     </section>`;
   }));
+  observeCards(body);
   spy();
 }
 
@@ -163,6 +166,7 @@ export function renderHighlights() {
   entries = entries.filter((e) => { const k = keyOf(e); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 12);
   if (!entries.length) { $("#destaques").hidden = true; return; }
   setHTML(el, entries.map((e, i) => cardHtml(e, i)));
+  observeCards(el);
 }
 
 /* ---------- Scrollspy das abas ---------- */

@@ -274,7 +274,7 @@ function createApi(db) {
   function stats(sinceIso) {
     const valid = "status <> 'cancelado'";
     const totals = db.prepare(`SELECT COUNT(*) AS orders, COALESCE(SUM(total_cents),0) AS revenue FROM orders WHERE created_at >= ? AND ${valid}`).get(sinceIso);
-    const byDay = db.prepare(`SELECT substr(created_at, 1, 10) AS day, COUNT(*) AS orders, SUM(total_cents) AS revenue
+    const byDay = db.prepare(`SELECT date(created_at, '-3 hours') AS day, COUNT(*) AS orders, SUM(total_cents) AS revenue
       FROM orders WHERE created_at >= ? AND ${valid} GROUP BY day ORDER BY day`).all(sinceIso);
     const byStatus = db.prepare("SELECT status, COUNT(*) AS n FROM orders WHERE created_at >= ? GROUP BY status").all(sinceIso);
     const rows = db.prepare(`SELECT items FROM orders WHERE created_at >= ? AND ${valid}`).all(sinceIso);

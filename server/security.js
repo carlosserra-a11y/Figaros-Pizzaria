@@ -68,7 +68,7 @@ export function parseCookies(header = "") {
 }
 
 export function sessionCookie(token, { secure, maxAgeMs }) {
-  const parts = [`${SESSION_COOKIE}=${token}`, "Path=/", "HttpOnly", "SameSite=Strict", `Max-Age=${Math.floor(maxAgeMs / 1000)}`];
+  const parts = [`${SESSION_COOKIE}=${token}`, "Path=/", "HttpOnly", "SameSite=Lax", `Max-Age=${Math.floor(maxAgeMs / 1000)}`];
   if (secure) parts.push("Secure");
   return parts.join("; ");
 }
