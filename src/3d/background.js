@@ -85,7 +85,8 @@ export function createBackgroundScene({ canvas, tier, onFail }) {
     for (const it of items) {
       const depthScale = (CAM_Z - it.z) / CAM_Z; // planos mais distantes mostram uma área maior
       // laterais: deixa o centro livre para o texto
-      const edge = viewW < 700 ? 0.86 : 0.5;
+      // objetos mais próximos (maiores) ficam ainda mais nas bordas
+      const edge = viewW < 700 ? 0.86 : it.z > 0 ? 0.8 : 0.66;
       it.x = it.side * halfW0 * depthScale * (edge + it.xr * (1 - edge) * 0.95);
       it.y = halfH0 * 0.8 - it.lane * (travel + halfH0 * 1.6);
     }

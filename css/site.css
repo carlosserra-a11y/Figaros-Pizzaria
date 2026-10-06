@@ -68,7 +68,7 @@ ul, ol { list-style: none; }
 .fx-canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: .75; }
 /* fundo 3D (ingredientes flutuando) — só aparece quando o WebGL liga */
 .bg-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; display: none; }
-html.bg-3d .bg-canvas { display: block; animation: fade 1.2s ease; }
+html.bg-3d .bg-canvas { display: block; opacity: .7; animation: fade 1.2s ease; }
 html.bg-3d .fx-canvas { display: none; }
 /* barra de progresso da rolagem */
 .scroll-progress { position: fixed; top: 0; left: 0; right: 0; height: 4px; z-index: 70; pointer-events: none; }
