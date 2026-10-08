@@ -3,6 +3,8 @@
    manjericão, tomate-cereja, rodela de tomate, azeitona,
    cogumelo, pepperoni, queijo, pimenta e cebola.
    Cada um devolve { geometry, material } prontos para instanciar.
+   As texturas chegam prontas (loadIngredientTextures) e, em aparelhos
+   fracos, os materiais "físicos" (verniz/brilho) viram padrão.
    ============================================================ */
 import {
   BufferGeometry, Float32BufferAttribute, MeshPhysicalMaterial, MeshStandardMaterial, Color, DoubleSide,
@@ -11,6 +13,21 @@ import {
 } from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { leafTexture, pepperoniTexture, tomatoSliceTexture } from "./textures.js";
+
+/** Texturas usadas pelos ingredientes (geradas no worker). */
+export async function loadIngredientTextures() {
+  const [leaf, pepperoni, tomatoSlice] = await Promise.all([leafTexture(), pepperoniTexture(), tomatoSliceTexture()]);
+  return { leaf, pepperoni, tomatoSlice };
+}
+
+const PHYSICAL_ONLY = ["clearcoat", "clearcoatRoughness", "sheen", "sheenRoughness", "sheenColor"];
+/** Material com verniz/brilho (alta qualidade) ou padrão, mais leve. */
+function surface(params, hq) {
+  if (hq) return new MeshPhysicalMaterial(params);
+  const p = { ...params };
+  PHYSICAL_ONLY.forEach((k) => delete p[k]);
+  return new MeshStandardMaterial(p);
+}
 
 function paint(geo, hex) {
   const c = new Color(hex);
@@ -57,14 +74,14 @@ export function createLeafGeometry(U = 26, V = 10) {
   g.computeVertexNormals();
   return g;
 }
-let _leafMat;
-export function leafMaterial() {
-  _leafMat ||= new MeshPhysicalMaterial({ map: leafTexture(), roughness: 0.42, sheen: 0.7, sheenRoughness: 0.5, sheenColor: new Color(0xa8e08a), clearcoat: 0.25, clearcoatRoughness: 0.5, side: DoubleSide });
-  return _leafMat;
+const leafMats = new Map();
+export function leafMaterial(tex, hq = true) {
+  if (!leafMats.has(hq)) leafMats.set(hq, surface({ map: tex.leaf, roughness: 0.42, sheen: 0.7, sheenRoughness: 0.5, sheenColor: new Color(0xa8e08a), clearcoat: 0.25, clearcoatRoughness: 0.5, side: DoubleSide }, hq));
+  return leafMats.get(hq);
 }
 
 /* ---------- Tomate-cereja (corpo + sépalas) ---------- */
-function tomato() {
+function tomato(tex, hq) {
   const body = new SphereGeometry(0.34, 40, 28);
   const p = body.getAttribute("position");
   for (let i = 0; i < p.count; i++) {
@@ -92,30 +109,27 @@ function tomato() {
   const stem = new CylinderGeometry(0.018, 0.026, 0.12, 8);
   stem.translate(0, 0.32, 0);
   paint(stem, 0x4d8a31);
-  return { geometry: merge([body, sep, stem]), material: new MeshPhysicalMaterial({ vertexColors: true, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.12, side: DoubleSide }) };
+  return { geometry: merge([body, sep, stem]), material: surface({ vertexColors: true, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.12, side: DoubleSide }, hq) };
 }
 
 /* ---------- Rodela de tomate ---------- */
-function tomatoSlice() {
+function tomatoSlice(tex, hq) {
   const g = new CylinderGeometry(0.42, 0.42, 0.06, 40, 1);
-  return { geometry: g, material: [
-    new MeshPhysicalMaterial({ color: 0xc8261a, roughness: 0.3, clearcoat: 0.8 }),
-    new MeshPhysicalMaterial({ map: tomatoSliceTexture(), roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.25 }),
-    new MeshPhysicalMaterial({ map: tomatoSliceTexture(), roughness: 0.35, clearcoat: 0.6 }),
-  ] };
+  const face = surface({ map: tex.tomatoSlice, roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.25 }, hq);
+  return { geometry: g, material: [surface({ color: 0xc8261a, roughness: 0.3, clearcoat: 0.8 }, hq), face, face] };
 }
 
 /* ---------- Azeitona preta (anel) ---------- */
-function olive() {
+function olive(tex, hq) {
   const g = new TorusGeometry(0.17, 0.075, 18, 36);
   const p = g.getAttribute("position");
   for (let i = 0; i < p.count; i++) p.setX(i, p.getX(i) * 1.12);
   g.computeVertexNormals();
-  return { geometry: g, material: new MeshPhysicalMaterial({ color: 0x241a1d, roughness: 0.32, clearcoat: 0.9, clearcoatRoughness: 0.18, sheen: 0.4, sheenColor: new Color(0x6b4a62) }) };
+  return { geometry: g, material: surface({ color: 0x241a1d, roughness: 0.32, clearcoat: 0.9, clearcoatRoughness: 0.18, sheen: 0.4, sheenColor: new Color(0x6b4a62) }, hq) };
 }
 
 /* ---------- Fatia de cogumelo ---------- */
-function mushroom() {
+function mushroom(tex, hq) {
   const s = new Shape();
   s.moveTo(-0.13, -0.38);
   s.lineTo(-0.12, -0.05);
@@ -126,11 +140,11 @@ function mushroom() {
   s.quadraticCurveTo(0, -0.42, -0.13, -0.38);
   const g = new ExtrudeGeometry(s, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.018, bevelSize: 0.018, bevelSegments: 3, curveSegments: 24 });
   g.center();
-  return { geometry: g, material: new MeshPhysicalMaterial({ color: 0xe8dcc6, roughness: 0.55, sheen: 0.6, sheenColor: new Color(0xb08a60) }) };
+  return { geometry: g, material: surface({ color: 0xe8dcc6, roughness: 0.55, sheen: 0.6, sheenColor: new Color(0xb08a60) }, hq) };
 }
 
 /* ---------- Pepperoni (encurva nas bordas, como no forno) ---------- */
-function pepperoni() {
+function pepperoni(tex, hq) {
   const g = new CylinderGeometry(0.32, 0.31, 0.045, 48, 1);
   const p = g.getAttribute("position");
   for (let i = 0; i < p.count; i++) {
@@ -138,13 +152,12 @@ function pepperoni() {
     p.setY(i, p.getY(i) + 0.05 * r * r);
   }
   g.computeVertexNormals();
-  const tex = pepperoniTexture();
-  const top = new MeshPhysicalMaterial({ map: tex, roughness: 0.38, clearcoat: 0.55, clearcoatRoughness: 0.3 });
-  return { geometry: g, material: [new MeshPhysicalMaterial({ color: 0x8a1c14, roughness: 0.45, clearcoat: 0.4 }), top, top] };
+  const top = surface({ map: tex.pepperoni, roughness: 0.38, clearcoat: 0.55, clearcoatRoughness: 0.3 }, hq);
+  return { geometry: g, material: [surface({ color: 0x8a1c14, roughness: 0.45, clearcoat: 0.4 }, hq), top, top] };
 }
 
 /* ---------- Queijo com furos ---------- */
-function cheese() {
+function cheese(tex, hq) {
   const s = new Shape();
   s.moveTo(-0.45, -0.25); s.lineTo(0.45, -0.25); s.lineTo(-0.45, 0.32); s.lineTo(-0.45, -0.25);
   for (const [x, y, r] of [[-0.26, -0.08, 0.07], [-0.05, -0.13, 0.045], [-0.33, 0.14, 0.05]]) {
@@ -152,11 +165,11 @@ function cheese() {
   }
   const g = new ExtrudeGeometry(s, { depth: 0.32, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2, curveSegments: 18 });
   g.center();
-  return { geometry: g, material: new MeshPhysicalMaterial({ color: 0xf2c14e, roughness: 0.5, sheen: 0.8, sheenColor: new Color(0xffe39a), clearcoat: 0.15 }) };
+  return { geometry: g, material: surface({ color: 0xf2c14e, roughness: 0.5, sheen: 0.8, sheenColor: new Color(0xffe39a), clearcoat: 0.15 }, hq) };
 }
 
 /* ---------- Pimenta dedo-de-moça ---------- */
-function chili() {
+function chili(tex, hq) {
   const curve = new QuadraticBezierCurve3(new Vector3(-0.45, 0, 0), new Vector3(0.05, -0.28, 0), new Vector3(0.5, 0.12, 0));
   const segs = 48, rad = 10;
   const body = new TubeGeometry(curve, segs, 0.1, rad, false);
@@ -177,18 +190,18 @@ function chili() {
   const cap = new SphereGeometry(0.075, 16, 10);
   cap.scale(0.7, 1, 1); cap.translate(-0.45, 0, 0);
   paint(cap, 0x3f7a2a);
-  return { geometry: merge([body, stem, cap]), material: new MeshPhysicalMaterial({ vertexColors: true, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.1 }) };
+  return { geometry: merge([body, stem, cap]), material: surface({ vertexColors: true, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.1 }, hq) };
 }
 
 /* ---------- Anel de cebola roxa ---------- */
-function onion() {
+function onion(tex, hq) {
   const g = new TorusGeometry(0.27, 0.03, 12, 48);
-  return { geometry: g, material: new MeshPhysicalMaterial({ color: 0xead7ea, roughness: 0.3, sheen: 1, sheenColor: new Color(0x9b4f8a), clearcoat: 0.5, transparent: true, opacity: 0.92 }) };
+  return { geometry: g, material: surface({ color: 0xead7ea, roughness: 0.3, sheen: 1, sheenColor: new Color(0x9b4f8a), clearcoat: 0.5, transparent: true, opacity: 0.92 }, hq) };
 }
 
 /* ---------- Folha (para o fundo) ---------- */
-function basil() {
-  return { geometry: createLeafGeometry(), material: leafMaterial() };
+function basil(tex, hq) {
+  return { geometry: createLeafGeometry(), material: leafMaterial(tex, hq) };
 }
 
 export const INGREDIENTS = { basil, tomato, tomatoSlice, olive, mushroom, pepperoni, cheese, chili, onion };

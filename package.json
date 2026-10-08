@@ -11,7 +11,9 @@
     "start": "node --disable-warning=ExperimentalWarning server/index.js",
     "dev": "node --disable-warning=ExperimentalWarning --watch server/index.js",
     "test": "node --disable-warning=ExperimentalWarning --test \"tests/*.test.js\"",
-    "build:3d": "esbuild src/3d/index.js --bundle --format=esm --minify --target=es2020 --legal-comments=none --outfile=js/site/3d.js"
+    "build:3d": "esbuild src/3d/index.js --bundle --format=esm --minify --target=es2020 --legal-comments=none --outfile=js/site/3d.js && esbuild src/3d/tex-worker.js --bundle --format=iife --minify --target=es2020 --legal-comments=none --outfile=js/site/3d-worker.js",
+    "build:vendor": "esbuild node_modules/lenis/dist/lenis.mjs --bundle --format=esm --minify --target=es2020 --legal-comments=none \"--banner:js=/*! Lenis (MIT License) https://github.com/darkroomengineering/lenis */\" --outfile=js/vendor/lenis.mjs",
+    "build": "npm run build:3d && npm run build:vendor"
   },
   "dependencies": {
     "compression": "^1.8.2",
@@ -19,6 +21,7 @@
   },
   "devDependencies": {
     "esbuild": "^0.28.2",
+    "lenis": "^1.3.26",
     "three": "^0.186.1"
   }
 }

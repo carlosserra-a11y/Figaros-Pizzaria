@@ -1,9 +1,10 @@
 /* Renderização do cardápio: abas de categoria, filtros, busca e destaques. */
-import { html, raw, $, $$, setHTML, brl, norm, debounce } from "./util.js";
-import { imgUrl } from "./api.js";
+import { html, raw, esc, $, $$, setHTML, brl, norm, debounce } from "./util.js";
+import { imgUrl, thumbUrl, photoSrcset } from "./api.js";
 import { flavorsOf, minFlavorPrice } from "../shared/pricing.js";
 import { attachTilt } from "./fx.js";
 import { observeCards } from "./scrollfx.js";
+import { motion, scrollToTarget, restoreScroll } from "./motion.js";
 
 const TAG_LABELS = { tradicional: "Tradicionais", especial: "Especiais", frango: "Frango", carnes: "Carnes", "frutos-do-mar": "Frutos do mar", queijos: "Queijos", vegetariana: "Vegetarianas", picante: "Picantes" };
 const view = { idx: null, query: "", filters: {}, onOpen: null, onQuickAdd: null };
@@ -44,14 +45,17 @@ function entryPrice(e) {
   return { value: e.product.price, prefix: "" };
 }
 
-function cardHtml(e, i = 0) {
+/** Largura que o cartão ocupa na tela (para o navegador escolher a foto certa). */
+const SIZES = { grid: "(max-width: 640px) 50vw, 300px", carousel: "(max-width: 640px) 72vw, 280px" };
+
+function cardHtml(e, i = 0, ctx = "grid") {
   const pr = entryPrice(e);
   const priceHtml = pr.value != null ? html`<span class="price">${pr.prefix ? html`<small>${pr.prefix}</small>` : ""}${brl(pr.value)}</span>` : html`<span></span>`;
   if (e.type === "build") {
     const sample = flavorsOf(view.idx, e.product.id).filter((f) => f.image).slice(0, 3);
     const maxF = Math.max(...e.product.sizes.map((s) => s.maxFlavors || 1));
     return html`<article class="card build" style="--i:${i}">
-      <div class="card-media"><div class="mini-pizza">${sample.map((f, k) => html`<img src="${imgUrl(f.image)}" alt="" loading="lazy" style="clip-path:polygon(50% 50%, ${["50% 0, 100% 0, 100% 100%, 93% 75%", "93% 75%, 50% 100%, 0 100%, 7% 75%", "7% 75%, 0 0, 50% 0"][k] || "0 0"})">`)}</div></div>
+      <div class="card-media"><div class="mini-pizza">${sample.map((f, k) => html`<img src="${thumbUrl(f.image)}" alt="" loading="lazy" style="clip-path:polygon(50% 50%, ${["50% 0, 100% 0, 100% 100%, 93% 75%", "93% 75%, 50% 100%, 0 100%, 7% 75%", "7% 75%, 0 0, 50% 0"][k] || "0 0"})">`)}</div></div>
       <div class="card-body">
         <h3>Monte sua pizza</h3>
         <p>Meio a meio ou até ${maxF} sabores — você escolhe tamanho, sabores e borda.</p>
@@ -73,7 +77,7 @@ function cardHtml(e, i = 0) {
   const attrs = quick ? raw(`data-quick="${e.product.id}"`) : raw(`data-open="${e.product.id}"${isFlavor ? ` data-flavor="${e.flavor.id}"` : ""}${e.size ? ` data-size="${e.size.id}"` : ""}`);
   return html`<article class="card" style="--i:${Math.min(i, 20)}">
     <div class="card-media">
-      ${img ? html`<img src="${img}" alt="${title}" loading="lazy" decoding="async" width="400" height="300">` : html`<span class="ph">🍕</span>`}
+      ${img ? html`<img src="${img}"${photoSrcset(img) ? raw(` srcset="${esc(photoSrcset(img))}" sizes="${SIZES[ctx]}"`) : ""} alt="${title}" loading="lazy" decoding="async" width="400" height="300">` : html`<span class="ph">🍕</span>`}
       <div class="badges">${badges}</div>
     </div>
     <div class="card-body">
@@ -91,8 +95,24 @@ function categories() {
 }
 
 function renderTabs(cats, counts) {
-  setHTML($("#catTabs"), cats.map((c, i) => html`<button class="cat-tab" role="tab" type="button" data-cat="${c.id}" aria-selected="${i === 0}" aria-controls="cat-${c.id}">
-    <span aria-hidden="true">${c.icon || "🍽️"}</span>${c.name}${counts ? html` <span class="n">${counts[c.id] || 0}</span>` : ""}</button>`));
+  setHTML($("#catTabs"), html`<span class="cat-ink" aria-hidden="true"></span>${cats.map((c, i) => html`<button class="cat-tab" role="tab" type="button" data-cat="${c.id}" aria-selected="${i === 0}" aria-controls="cat-${c.id}">
+    <span aria-hidden="true">${c.icon || "🍽️"}</span>${c.name}${counts ? html` <span class="n">${counts[c.id] || 0}</span>` : ""}</button>`)}`);
+  moveInk(true);
+}
+
+/** Pílula verde que desliza até a aba ativa. */
+function moveInk(instant = false) {
+  const bar = $("#catTabs");
+  const ink = bar?.querySelector(".cat-ink");
+  const active = bar?.querySelector('.cat-tab[aria-selected="true"]');
+  if (!ink) return;
+  if (!active) { ink.style.opacity = "0"; return; }
+  if (instant) ink.classList.add("no-anim");
+  ink.style.width = `${active.offsetWidth}px`;
+  ink.style.height = `${active.offsetHeight}px`;
+  ink.style.transform = `translate(${active.offsetLeft}px, ${active.offsetTop}px)`;
+  ink.style.opacity = "1";
+  if (instant) { void ink.offsetWidth; ink.classList.remove("no-anim"); }
 }
 
 function chipsFor(cat, entries) {
@@ -165,7 +185,7 @@ export function renderHighlights() {
   const seen = new Set();
   entries = entries.filter((e) => { const k = keyOf(e); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 12);
   if (!entries.length) { $("#destaques").hidden = true; return; }
-  setHTML(el, entries.map((e, i) => cardHtml(e, i)));
+  setHTML(el, entries.map((e, i) => cardHtml(e, i, "carousel")));
   observeCards(el);
 }
 
@@ -175,13 +195,13 @@ function spy() {
   spyObserver?.disconnect();
   const tabs = $$("#catTabs .cat-tab");
   const select = (id) => {
-    tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.cat === id)));
     const active = tabs.find((t) => t.dataset.cat === id);
-    if (active) {
-      const bar = $("#catTabs");
-      const left = active.offsetLeft - bar.clientWidth / 2 + active.clientWidth / 2;
-      bar.scrollTo({ left, behavior: "smooth" });
-    }
+    if (!active || active.getAttribute("aria-selected") === "true") return;
+    tabs.forEach((t) => t.setAttribute("aria-selected", String(t === active)));
+    moveInk();
+    const bar = $("#catTabs");
+    const left = active.offsetLeft - bar.clientWidth / 2 + active.clientWidth / 2;
+    bar.scrollTo({ left, behavior: motion.reduced ? "auto" : "smooth" });
   };
   spyObserver = new IntersectionObserver((entries) => {
     const vis = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
@@ -200,22 +220,25 @@ export function initMenu(idx, { onOpen, onQuickAdd }) {
   const input = $("#searchInput"), clear = $("#searchClear");
   const run = debounce(() => { view.query = input.value; clear.hidden = !input.value; renderMenu(); }, 160);
   input.addEventListener("input", run);
-  input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("#menuBody").scrollIntoView({ behavior: "smooth" }); } });
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); scrollToTarget($("#menuBody"), { offset: 150 }); } });
   clear.addEventListener("click", () => { input.value = ""; view.query = ""; clear.hidden = true; renderMenu(); input.focus(); });
 
   $("#catTabs").addEventListener("click", (e) => {
     const tab = e.target.closest("[data-cat]");
     if (!tab) return;
-    document.getElementById(`cat-${tab.dataset.cat}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollToTarget(document.getElementById(`cat-${tab.dataset.cat}`));
   });
+  if ("ResizeObserver" in window) new ResizeObserver(() => moveInk(true)).observe($("#catTabs"));
 
   const onClick = (e) => {
     const chip = e.target.closest("[data-filter]");
     if (chip) {
       view.filters[chip.dataset.for] = chip.dataset.filter;
       const y = window.scrollY;
-      renderMenu();
-      window.scrollTo({ top: y });
+      const apply = () => { renderMenu(); restoreScroll(y); };
+      // troca suave dos cartões (View Transitions), quando o navegador suporta
+      if (document.startViewTransition && !motion.reduced) document.startViewTransition(apply);
+      else apply();
       return;
     }
     const quick = e.target.closest("[data-quick]");

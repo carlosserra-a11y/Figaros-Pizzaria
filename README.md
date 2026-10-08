@@ -12,11 +12,11 @@ Site oficial da **Figaro's Pizzaria** (Av. Elza Lucchi, 1277 – Ponte do Imarui
 - **Acompanhamento do pedido** pelo cliente ("Meus pedidos") e "Pedir de novo".
 - **Painel do desenvolvedor** (`/admin/`) com usuário e senha para cadastrar novos sabores, pizzas, produtos e bebidas, mudar preços, horários, taxa de entrega e ver os pedidos chegando (com aviso sonoro).
 - **Modelos 3D** (three.js, feitos em código, sem downloads extras):
-  - **pizza fatiada no topo** com a foto real por cima, tábua de madeira e vapor — ao rolar, as fatias se abrem e uma é puxada com fios de queijo;
-  - **ingredientes flutuando no fundo** da página em várias profundidades (parallax de câmera), girando com a velocidade da rolagem;
-  - **caixa de pizza da Figaro's** com a logo impressa, que abre conforme a rolagem na seção "Como pedir".
-- Animações de rolagem (camadas de profundidade, barra de progresso, faixa de sabores reativa, cartões que entram em 3D), brasas, confete.
-- Sem WebGL, com "reduzir movimento" ou em caso de erro, o site cai sozinho para a versão 2D. As cenas pausam fora da tela e usam menos qualidade em aparelhos fracos.
+  - **pizza fatiada no topo** com a foto real por cima, tábua de madeira e vapor — as fatias caem no lugar ao abrir a página; arrastar gira a pizza, clicar puxa uma fatia com fios de queijo; ao rolar, as fatias se abrem em leque;
+  - **ingredientes flutuando no fundo** em várias profundidades (parallax de câmera), girando com a velocidade da rolagem; o cursor afasta os ingredientes (que voltam com mola) e um clique numa área vazia solta uma nuvem de farinha;
+  - **caixa de pizza da Figaro's** com a logo impressa, contada pela rolagem em "Como pedir": no computador a seção fica presa na tela enquanto a tampa abre, a pizza sobe e os passos 1-2-3 acendem.
+- Rolagem suave (Lenis) com mouse/trackpad, títulos que entram palavra por palavra, listas em cascata, abas do cardápio com indicador deslizante, cartões que entram em 3D, "voar para o carrinho" com rastro, brasas, confete.
+- Sem WebGL, com "reduzir movimento" ou em caso de erro, o site cai sozinho para a versão 2D. Tudo roda num único laço de animação que dorme quando nada se mexe, as cenas pausam fora da tela e com modal aberto, e a qualidade se ajusta sozinha medindo os quadros. Detalhes e medições em [`PERF.md`](PERF.md).
 
 ---
 
@@ -122,18 +122,22 @@ server/db.js            banco SQLite (node:sqlite, sem dependências nativas)
 server/security.js      senhas, sessões, limites de tentativas, cabeçalhos de segurança
 server/validate.js      validação de tudo que chega na API
 tests/                  testes automáticos (npm test)
+js/site/motion.js       laço único de animação, rolagem suave (Lenis), "reduzir movimento"
+js/site/3d-worker.js    worker das texturas 3D (gerado a partir de src/3d com npm run build:3d)
+js/vendor/lenis.mjs     Lenis (rolagem suave, MIT) — gerado com npm run build:vendor
+sw.js                   service worker: imagens em cache e site abrindo sem internet
 ```
 
 ## 🧊 Modelos 3D
 
-O código 3D fica em `src/3d/` e é empacotado (com só o necessário do three.js) em `js/site/3d.js`:
+O código 3D fica em `src/3d/` e é empacotado (com só o necessário do three.js) em `js/site/3d.js` e `js/site/3d-worker.js`:
 
 ```bash
 npm install
-npm run build:3d
+npm run build
 ```
 
-Rode o build sempre que mudar algo em `src/3d/` e faça commit do `js/site/3d.js` gerado (o GitHub Pages usa esse arquivo).
+Rode o build sempre que mudar algo em `src/3d/` e faça commit dos arquivos gerados (o GitHub Pages usa esses arquivos). `npm run build:3d` refaz só o 3D; `npm run build:vendor` refaz só o Lenis.
 
 | Arquivo | O que faz |
 |---|---|
@@ -142,10 +146,23 @@ Rode o build sempre que mudar algo em `src/3d/` e faça commit do `js/site/3d.js
 | `src/3d/hero.js` | cena do topo |
 | `src/3d/background.js` | fundo com ingredientes em profundidade |
 | `src/3d/box.js` | caixa da Figaro's que abre com a rolagem |
-| `src/3d/textures.js` | texturas geradas no navegador (madeira, borda, papelão com a logo…) |
-| `src/3d/core.js` | renderizador, iluminação, laço único de animação, detecção de aparelho |
+| `src/3d/textures.js` | monta as texturas (madeira, borda, papelão com a logo…) e guarda em cache |
+| `src/3d/texgen.js` | os pixels das texturas — roda dentro de um Web Worker, sem travar a página |
+| `src/3d/texpool.js` | fila de texturas (worker; se ele falhar, gera aos pouquinhos na página) |
+| `src/3d/core.js` | "palco" (um renderer para topo + caixa), laço compartilhado, qualidade adaptativa, perda de contexto |
 
-Para testar as cenas com a aba em segundo plano, abra o site com `?debug3d` no endereço.
+### Endereços de teste
+
+| Adicione no endereço | Para quê |
+|---|---|
+| `?fps` | medidor de quadros por segundo no canto da tela |
+| `?no3d` | abre o site sem nenhum 3D (versão 2D) |
+| `?quality=low` ou `?quality=high` | força a qualidade do 3D (aparelho fraco / forte) |
+| `?nosmooth` | desliga a rolagem suave |
+| `?nosw` | não registra o service worker |
+| `?debug3d` | expõe as cenas em `window.__fig3d` para inspeção |
+
+Dá para combinar: `?fps&quality=low`.
 
 ## 🔒 Segurança
 

@@ -4,13 +4,16 @@
    - corte lateral com massa, molho e queijo
    - borda (cornicione) com manchas de forno
    - fios de queijo que esticam quando uma fatia é puxada
+   - entrada: as fatias caem no lugar uma a uma, com mola
+   Os materiais são compartilhados (topo e caixa usam os mesmos).
    ============================================================ */
 import {
   Group, Mesh, BufferGeometry, Float32BufferAttribute, BufferAttribute, MeshPhysicalMaterial, MeshStandardMaterial,
-  TorusGeometry, CircleGeometry, Vector3, Quaternion, Color, DoubleSide, TextureLoader, SRGBColorSpace,
+  TorusGeometry, CircleGeometry, Vector3, Quaternion, Color, DoubleSide,
 } from "three";
-import { crustTexture, sliceCutTexture, bottomTexture, bumpNoise } from "./textures.js";
-import { createLeafGeometry, leafMaterial } from "./ingredients.js";
+import { crustTexture, sliceCutTexture, bottomTexture, bumpNoise, photoTexture } from "./textures.js";
+import { createLeafGeometry, leafMaterial, loadIngredientTextures } from "./ingredients.js";
+import { clamp01, easeOutBack } from "./core.js";
 
 const RI = 0.92; // raio do recheio
 const RC = 0.955; // raio da borda
@@ -128,41 +131,44 @@ class CheeseStrand {
   }
 }
 
+let matsPromise = null;
+/** Materiais da pizza (gerados uma vez, com as texturas do worker e a foto). */
+export function pizzaMaterials({ photoUrl, tier }) {
+  matsPromise ||= (async () => {
+    const texSize = tier.texSize;
+    const [photo, crustMap, bump, cut, bottom, ingTex] = await Promise.all([
+      photoTexture(photoUrl).catch(() => null), crustTexture(texSize), bumpNoise(256, 22), sliceCutTexture(), bottomTexture(Math.min(512, texSize)), loadIngredientTextures(),
+    ]);
+    const hq = !tier.low;
+    const Top = hq ? MeshPhysicalMaterial : MeshStandardMaterial;
+    const top = new Top({ color: photo ? 0xffffff : 0xe9a94f, roughness: 0.55, map: photo, bumpMap: photo, bumpScale: 2.2, ...(hq ? { clearcoat: 0.35, clearcoatRoughness: 0.45 } : {}) });
+    const Cheese = hq ? MeshPhysicalMaterial : MeshStandardMaterial;
+    return {
+      top,
+      crust: new MeshStandardMaterial({ map: crustMap, roughness: 0.82, bumpMap: bump, bumpScale: 3 }),
+      cut: new MeshStandardMaterial({ map: cut, roughness: 0.7, side: DoubleSide }),
+      bottom: new MeshStandardMaterial({ map: bottom, roughness: 0.9, bumpMap: bump, bumpScale: 2 }),
+      cap: new MeshStandardMaterial({ color: 0xf1dcae, roughness: 0.85, bumpMap: bump, bumpScale: 4 }),
+      cheese: new Cheese({ color: 0xf6dc8f, roughness: 0.38, ...(hq ? { clearcoat: 0.6, clearcoatRoughness: 0.3, sheen: 0.5, sheenColor: new Color(0xfff2c8) } : {}) }),
+      leaf: leafMaterial(ingTex, hq),
+    };
+  })();
+  return matsPromise;
+}
+
 /**
- * Cria a pizza. `photoUrl` = foto de cima da pizza (quadrada).
- * Retorna { group, setExplode(e, pull), ready }.
+ * Cria a pizza com os materiais já prontos (veja pizzaMaterials).
+ * Retorna { group, parts, setExplode(e, pull, time, intro) }.
  */
-export function createPizza({ photoUrl, tier, slices = 8, garnish = true }) {
+export function createPizza({ mats, slices = 8, garnish = true }) {
   const group = new Group();
-  const texSize = tier.texSize;
-
-  const topMat = new MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.55, clearcoat: 0.35, clearcoatRoughness: 0.45, bumpScale: 2.2 });
-  topMat.color = new Color(0xe9a94f);
-  const ready = new Promise((resolve) => {
-    new TextureLoader().load(photoUrl, (tex) => {
-      tex.colorSpace = SRGBColorSpace;
-      tex.anisotropy = 8;
-      topMat.map = tex;
-      topMat.bumpMap = tex; // o próprio relevo da foto vira volume nos ingredientes
-      topMat.color.set(0xffffff);
-      topMat.needsUpdate = true;
-      resolve();
-    }, undefined, () => resolve());
-  });
-
-  const crustMap = crustTexture(texSize);
-  const bump = bumpNoise(256, 22);
-  const crustMat = new MeshStandardMaterial({ map: crustMap, roughness: 0.82, bumpMap: bump, bumpScale: 3 });
-  const cutMat = new MeshStandardMaterial({ map: sliceCutTexture(), roughness: 0.7, side: DoubleSide });
-  const bottomMat = new MeshStandardMaterial({ map: bottomTexture(Math.min(512, texSize)), roughness: 0.9, bumpMap: bump, bumpScale: 2 });
-  const capMat = new MeshStandardMaterial({ color: 0xf1dcae, roughness: 0.85, bumpMap: bump, bumpScale: 4 });
-  const cheeseMat = new MeshPhysicalMaterial({ color: 0xf6dc8f, roughness: 0.38, clearcoat: 0.6, clearcoatRoughness: 0.3, sheen: 0.5, sheenColor: new Color(0xfff2c8) });
+  const topMat = mats.top, crustMat = mats.crust, cutMat = mats.cut, bottomMat = mats.bottom, capMat = mats.cap, cheeseMat = mats.cheese;
 
   const step = (Math.PI * 2) / slices;
   const topUV = (x, z) => [0.5 + (x / RI) * UVR, 0.5 + (-z / RI) * UVR];
   const bottomUV = (x, z) => [0.5 + x * 0.5, 0.5 + z * 0.5];
   const leafGeo = garnish ? createLeafGeometry() : null;
-  const leafMat = garnish ? leafMaterial() : null;
+  const leafMat = garnish ? mats.leaf : null;
 
   const parts = [];
   for (let i = 0; i < slices; i++) {
@@ -216,17 +222,24 @@ export function createPizza({ photoUrl, tier, slices = 8, garnish = true }) {
   const A = new Vector3(), B = new Vector3();
   const local = new Vector3();
 
-  /** e = afastamento geral (0–1); pull = quanto a fatia 0 é levantada (0–1). */
-  function setExplode(e, pull = 0, time = 0) {
+  /**
+   * e = afastamento geral (0–1); pull = quanto a fatia 0 é levantada (0–1);
+   * intro = entrada (0 → fatias no alto, 1 → montadas): cada fatia cai no lugar com mola, uma após a outra.
+   */
+  function setExplode(e, pull = 0, time = 0, intro = 1) {
     parts.forEach((g, i) => {
       const { dir, axis, seed } = g.userData;
       const isHero = i === 0;
-      const out = e * (0.16 + seed * 0.06) + (isHero ? pull * 0.55 : 0);
+      const k = intro >= 1 ? 1 : clamp01((intro * 1.7 - i * 0.085) / 0.9);
+      const drop = 1 - easeOutBack(k, 1.9); // vai de 1 a 0 (com um leve "quique" abaixo de 0)
+      const out = e * (0.16 + seed * 0.06) + (isHero ? pull * 0.55 : 0) + Math.max(0, drop) * 0.45;
       g.position.copy(dir).multiplyScalar(out);
-      g.position.y = e * (0.05 + seed * 0.08) + (isHero ? pull * 0.42 : 0) + Math.sin(time * 1.3 + seed * 6) * 0.01 * e;
-      const tilt = (isHero ? pull * 0.55 : e * (seed - 0.5) * 0.25);
+      const fall = drop > 0 ? drop * 2.4 : drop * 0.18; // começa fora do quadro, lá em cima; o "quique" é só um afundadinho
+      g.position.y = e * (0.05 + seed * 0.08) + (isHero ? pull * 0.42 : 0) + Math.sin(time * 1.3 + seed * 6) * 0.01 * e + fall;
+      const tilt = (isHero ? pull * 0.55 : e * (seed - 0.5) * 0.25) + Math.max(0, drop) * (0.6 + seed * 0.5);
       q.setFromAxisAngle(axis, tilt);
       g.quaternion.copy(q);
+      g.visible = k > 0;
     });
     const show = pull > 0.04;
     const hero = parts[0];
@@ -245,5 +258,5 @@ export function createPizza({ photoUrl, tier, slices = 8, garnish = true }) {
     });
   }
   setExplode(0, 0);
-  return { group, parts, setExplode, ready };
+  return { group, parts, setExplode };
 }

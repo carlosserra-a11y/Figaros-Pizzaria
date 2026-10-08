@@ -11,16 +11,23 @@
   <link rel="icon" href="assets/img/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
+  <link rel="canonical" href="https://carlosserra-a11y.github.io/Figaros-Pizzaria/">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Figaro's Pizzaria · Palhoça, SC">
   <meta property="og:description" content="57 sabores, borda de requeijão e refri inclusos. Peça pelo site e acompanhe seu pedido.">
-  <meta property="og:image" content="assets/img/logo.png">
+  <meta property="og:url" content="https://carlosserra-a11y.github.io/Figaros-Pizzaria/">
+  <meta property="og:image" content="https://carlosserra-a11y.github.io/Figaros-Pizzaria/assets/img/logo.png">
+  <meta property="og:image:alt" content="Logo da Figaro's Pizzaria">
   <meta property="og:locale" content="pt_BR">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Figaro's Pizzaria · Palhoça, SC">
+  <meta name="twitter:description" content="57 sabores, borda de requeijão e refri inclusos. Peça pelo site e acompanhe seu pedido.">
+  <meta name="twitter:image" content="https://carlosserra-a11y.github.io/Figaros-Pizzaria/assets/img/logo.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Nunito:wght@400..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/site.css">
   <link rel="modulepreload" href="js/shared/pricing.js">
 
@@ -32,9 +39,10 @@
     "servesCuisine": ["Pizza", "Italiana", "Brasileira"],
     "address": { "@type": "PostalAddress", "streetAddress": "Av. Elza Lucchi, 1277", "addressLocality": "Palhoça", "addressRegion": "SC", "postalCode": "88130-600", "addressCountry": "BR" },
     "telephone": "+55 48 93341-0102",
-    "image": "assets/img/logo.png",
+    "url": "https://carlosserra-a11y.github.io/Figaros-Pizzaria/",
+    "image": "https://carlosserra-a11y.github.io/Figaros-Pizzaria/assets/img/logo.png",
     "acceptsReservations": false,
-    "hasMenu": "#cardapio"
+    "hasMenu": "https://carlosserra-a11y.github.io/Figaros-Pizzaria/#cardapio"
   }
   </script>
 </head>
@@ -151,7 +159,7 @@
         <div class="section-head">
           <div>
             <p class="eyebrow"><span class="eyebrow-line"></span><span id="highlightsEyebrow">Os queridinhos da casa</span></p>
-            <h2 class="section-title" id="destaquesTitle">Destaques</h2>
+            <h2 class="section-title" id="destaquesTitle" data-split>Destaques</h2>
           </div>
           <div class="carousel-nav">
             <button class="round-btn" type="button" data-scroll="-1" aria-label="Anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg></button>
@@ -168,7 +176,7 @@
         <div class="section-head">
           <div>
             <p class="eyebrow"><span class="eyebrow-line"></span>Cardápio completo</p>
-            <h2 class="section-title" id="cardapioTitle">Monte seu pedido</h2>
+            <h2 class="section-title" id="cardapioTitle" data-split>Monte seu pedido</h2>
           </div>
           <label class="search" for="searchInput">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 0 1 6.3 12.9l5.4 5.4-1.4 1.4-5.4-5.4A8 8 0 1 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"/></svg>
@@ -195,38 +203,41 @@
     </section>
 
     <!-- ======================= COMO FUNCIONA ======================= -->
-    <section class="section steps" id="como-funciona" aria-labelledby="stepsTitle">
-      <div class="container steps-layout">
-        <div class="box-stage" id="box3d">
-          <img class="box-fallback" src="assets/img/chef.webp" alt="" width="320" height="320" loading="lazy">
-          <p class="box-caption" aria-hidden="true">Role a página para abrir a caixa</p>
-        </div>
-        <div class="steps-copy">
-          <p class="eyebrow"><span class="eyebrow-line"></span>Simples assim</p>
-          <h2 class="section-title" id="stepsTitle" data-depth="0.06">Do forno direto <span class="type-logo green">pra sua mesa</span></h2>
-          <ol class="steps-list">
-            <li class="step reveal">
-              <span class="step-num">1</span>
-              <div>
-                <h3>Escolha</h3>
-                <p>Monte a pizza do seu jeito — até 3 sabores na Gigante — ou pegue um combo.</p>
-              </div>
-            </li>
-            <li class="step reveal">
-              <span class="step-num">2</span>
-              <div>
-                <h3>Confirme</h3>
-                <p>Finalize no site e envie o resumo pronto para o nosso WhatsApp com um toque.</p>
-              </div>
-            </li>
-            <li class="step reveal">
-              <span class="step-num">3</span>
-              <div>
-                <h3>Acompanhe</h3>
-                <p>Veja quando o pedido entra no forno e sai para entrega, em “Meus pedidos”.</p>
-              </div>
-            </li>
-          </ol>
+    <section class="section steps story" id="como-funciona" aria-labelledby="stepsTitle">
+      <div class="steps-pin">
+        <div class="container steps-layout">
+          <div class="box-stage" id="box3d">
+            <img class="box-fallback" src="assets/img/chef.webp" alt="" width="320" height="320" loading="lazy">
+            <p class="box-caption" aria-hidden="true">Role a página para abrir a caixa</p>
+          </div>
+          <div class="steps-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span>Simples assim</p>
+            <h2 class="section-title" id="stepsTitle" data-split>Do forno direto <span class="type-logo green">pra sua mesa</span></h2>
+            <div class="story-bar" aria-hidden="true"><i></i></div>
+            <ol class="steps-list" data-stagger>
+              <li class="step reveal">
+                <span class="step-num">1</span>
+                <div>
+                  <h3>Escolha</h3>
+                  <p>Monte a pizza do seu jeito — até 3 sabores na Gigante — ou pegue um combo.</p>
+                </div>
+              </li>
+              <li class="step reveal">
+                <span class="step-num">2</span>
+                <div>
+                  <h3>Confirme</h3>
+                  <p>Finalize no site e envie o resumo pronto para o nosso WhatsApp com um toque.</p>
+                </div>
+              </li>
+              <li class="step reveal">
+                <span class="step-num">3</span>
+                <div>
+                  <h3>Acompanhe</h3>
+                  <p>Veja quando o pedido entra no forno e sai para entrega, em “Meus pedidos”.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
         </div>
       </div>
     </section>
@@ -242,9 +253,9 @@
         </div>
         <div class="about-copy reveal">
           <p class="eyebrow light"><span class="eyebrow-line"></span>Feita com carinho desde sempre</p>
-          <h2 class="section-title light" id="sobreTitle">Tradição de pizzaria, no ritmo da sua casa.</h2>
+          <h2 class="section-title light" id="sobreTitle" data-split>Tradição de pizzaria, no ritmo da sua casa.</h2>
           <p class="lead">A Figaro's nasceu em Palhoça com uma missão simples: servir pizzas generosas, recheadas de verdade, com atendimento de quem gosta do que faz. No salão você encontra <strong>rodízio de pizzas</strong> e <strong>buffet completo no almoço</strong> — e a mesma pizza vai quentinha até a sua porta.</p>
-          <ul class="about-points">
+          <ul class="about-points" data-stagger>
             <li><span>🍕</span>Pizzas bem recheadas</li>
             <li><span>🧀</span>Borda de requeijão inclusa</li>
             <li><span>🥤</span>Refri incluso nas salgadas</li>
@@ -263,7 +274,7 @@
         <div class="section-head">
           <div>
             <p class="eyebrow"><span class="eyebrow-line"></span>Quem prova, volta</p>
-            <h2 class="section-title" id="reviewsTitle">O que dizem da gente</h2>
+            <h2 class="section-title" id="reviewsTitle" data-split>O que dizem da gente</h2>
           </div>
           <div class="rating-big" id="ratingBig"></div>
         </div>
@@ -276,8 +287,8 @@
       <div class="container contact-grid">
         <div class="contact-card reveal">
           <p class="eyebrow"><span class="eyebrow-line"></span>Venha nos visitar</p>
-          <h2 class="section-title" id="contatoTitle">Onde estamos</h2>
-          <ul class="contact-list">
+          <h2 class="section-title" id="contatoTitle" data-split>Onde estamos</h2>
+          <ul class="contact-list" data-stagger>
             <li>
               <span class="ci">📍</span>
               <div><strong>Endereço</strong><p id="storeAddress">Av. Elza Lucchi, 1277 – Ponte do Imaruim, Palhoça – SC, 88130-600</p></div>

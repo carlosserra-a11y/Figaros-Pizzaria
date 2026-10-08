@@ -2,6 +2,8 @@
 import { reducedMotion } from "./util.js";
 
 const stack = [];
+/** Avisa o resto do site (rolagem suave, 3D) quando há camada aberta por cima da página. */
+const announce = () => document.dispatchEvent(new CustomEvent("figaros:layers", { detail: { open: stack.length > 0 } }));
 const pending = new WeakMap(); // fechamentos animando — cancelados se a camada reabrir
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -13,6 +15,7 @@ export function openLayer(layer, { onClose, initialFocus } = {}) {
   layer.hidden = false;
   layer.classList.remove("closing");
   document.body.classList.add("no-scroll");
+  announce();
   requestAnimationFrame(() => {
     const target = (initialFocus && layer.querySelector(initialFocus)) || layer.querySelector(".dialog-close, .drawer-head button") || layer.querySelector(FOCUSABLE);
     target?.focus({ preventScroll: true });
@@ -29,7 +32,7 @@ export function closeLayer(layer, { silent = false } = {}) {
     if (!silent) entry.onClose?.();
     if (reopening) return;
     layer.hidden = true;
-    if (!stack.length) document.body.classList.remove("no-scroll");
+    if (!stack.length) { document.body.classList.remove("no-scroll"); announce(); }
     if (entry.returnTo && document.contains(entry.returnTo)) entry.returnTo.focus?.({ preventScroll: true });
   };
   if (reducedMotion()) return finish();

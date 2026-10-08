@@ -11,7 +11,10 @@ import { initCheckout, openCart, renderCartBadge, onStoreStatusChange } from "./
 import { initOrders } from "./orders.js";
 import { initBackgroundFx, initFloaters, initMagnetic, observeReveal, flyToCart, toast, disableFlour } from "./fx.js";
 import { closeLayer } from "./dialog.js";
-import { initScrollFx } from "./scrollfx.js";
+import { initScrollFx, getStoryProgress } from "./scrollfx.js";
+import { ticker, initSmoothScroll, scrollToTarget, initFpsMeter } from "./motion.js";
+
+const PARAMS = new URLSearchParams(location.search);
 
 const DAYS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
@@ -22,6 +25,23 @@ function initChrome() {
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
+  // Âncoras (#cardapio, #contato…) rolam suave e param no lugar certo, abaixo do header fixo
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || a.classList.contains("skip-link") || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const id = decodeURIComponent(a.getAttribute("href").slice(1));
+    const target = /^[\w-]+$/.test(id) ? document.getElementById(id) : null; // ignora #pedido/CODIGO
+    if (!target) return;
+    e.preventDefault();
+    scrollToTarget(target);
+    if (location.hash !== `#${id}`) history.pushState(null, "", `#${id}`);
+    // pelo teclado (Enter no link): o foco vai junto para a seção, como numa âncora comum
+    if (e.detail === 0) {
+      if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+    }
+  });
+
   const toggle = $("#menuToggle"), nav = $("#mobileNav");
   const setMenu = (open) => { toggle.setAttribute("aria-expanded", String(open)); nav.hidden = !open; toggle.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu"); };
   toggle.addEventListener("click", () => setMenu(nav.hidden));
@@ -31,10 +51,21 @@ function initChrome() {
 
   const links = $$(".main-nav a");
   const sections = links.map((a) => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+  const hero = document.querySelector(".hero");
   const navSpy = new IntersectionObserver((entries) => entries.forEach((e) => {
-    if (e.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === `#${e.target.id}`));
+    if (!e.isIntersecting) return;
+    // de volta ao topo: nenhum item fica marcado (antes ficava preso no último visitado)
+    const id = e.target === hero ? "" : e.target.id;
+    links.forEach((a) => a.classList.toggle("active", !!id && a.getAttribute("href") === `#${id}`));
   }), { rootMargin: "-45% 0px -50% 0px" });
   sections.forEach((s) => navSpy.observe(s));
+  if (hero) navSpy.observe(hero);
+
+  // Animações CSS longas (selo girando, vapor, logo flutuando) param quando a seção sai da tela
+  if ("IntersectionObserver" in window) {
+    const off = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle("is-offscreen", !e.isIntersecting)), { rootMargin: "100px" });
+    document.querySelectorAll(".hero, .about").forEach((el) => off.observe(el));
+  }
 
   $("#cartBtn").addEventListener("click", openCart);
   $("#floatingCart").addEventListener("click", openCart);
@@ -128,6 +159,8 @@ function renderMarquee(menu) {
 /* ---------- Início ---------- */
 async function start() {
   initChrome();
+  initSmoothScroll();
+  if (PARAMS.has("fps")) initFpsMeter();
   initBackgroundFx();
   initFloaters();
   initMagnetic();
@@ -182,7 +215,7 @@ async function start() {
   }, 60_000);
 
   // Modelos 3D: carregados depois que a página já está na tela (não atrasam o cardápio)
-  load3D();
+  if (!PARAMS.has("no3d")) load3D();
 
   window.addEventListener("pageshow", (e) => { if (e.persisted) renderCartBadge(); });
   window.FIGAROS = { closeAll: () => $$(".layer:not([hidden])").forEach((l) => closeLayer(l)) };
@@ -196,10 +229,14 @@ function load3D() {
         box: $("#box3d"),
         background: $("#bgCanvas"),
         photoUrl: new URL("assets/img/hero-pizza.webp", document.baseURI).href,
-        logoUrl: new URL("assets/img/logo.png", document.baseURI).href,
+        logoUrl: new URL("assets/img/logo-lid.webp", document.baseURI).href,
+        ticker,
+        storyProgress: getStoryProgress,
+        covers: [$("#sobre")],
+        quality: PARAMS.get("quality"),
+        onBackground: disableFlour,
       });
       document.documentElement.classList.toggle("has-3d", r.enabled);
-      if (r.started?.includes("fundo")) disableFlour();
     })
     .catch((e) => console.warn("3D indisponível:", e));
   if ("requestIdleCallback" in window) requestIdleCallback(go, { timeout: 1500 });
@@ -207,3 +244,8 @@ function load3D() {
 }
 
 start();
+
+// Service worker: imagens salvas no aparelho e o site abre até sem internet (?nosw desliga)
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost") && !PARAMS.has("nosw")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}

@@ -1,193 +1,252 @@
 /* ============================================================
-   Núcleo 3D: renderer, ambiente PBR, laço único de animação,
-   pausa fora da tela, perda de contexto e nível do aparelho.
+   Núcleo 3D:
+   - nível do aparelho (sem criar contexto WebGL extra só para testar)
+   - laço de animação compartilhado com o site (js/site/motion.js)
+   - "palco": UM renderer para o topo e a caixa (nunca aparecem juntos)
+   - medidas de seção em cache (nada de getBoundingClientRect por quadro)
+   - qualidade adaptativa, pausa com modal aberto, perda/recuperação de contexto
    ============================================================ */
 import {
-  WebGLRenderer, SRGBColorSpace, ACESFilmicToneMapping, PCFSoftShadowMap,
-  PMREMGenerator, Scene, CanvasTexture, RepeatWrapping, LinearMipmapLinearFilter,
+  WebGLRenderer, SRGBColorSpace, ACESFilmicToneMapping, PCFShadowMap, PMREMGenerator,
 } from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
-export const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const rmQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+export const prefersReducedMotion = () => rmQuery.matches;
 
-/** Detecta se dá para usar WebGL (e qual qualidade). */
-export function detectTier() {
-  let gl = null;
-  try {
-    const c = document.createElement("canvas");
-    gl = c.getContext("webgl2") || c.getContext("webgl");
-  } catch { /* sem WebGL */ }
-  if (!gl) return null;
+/** Detecta se dá para usar WebGL e qual qualidade (override: "low" | "high"). */
+export function detectTier(override) {
+  if (!("WebGLRenderingContext" in window)) return null;
   const cores = navigator.hardwareConcurrency || 4;
   const mem = navigator.deviceMemory || 4;
   const small = Math.min(screen.width, screen.height) < 700;
-  const saveData = navigator.connection?.saveData;
-  const low = saveData || cores <= 4 || mem <= 3 || (small && cores <= 6);
-  gl.getExtension("WEBGL_lose_context")?.loseContext();
+  const saveData = !!navigator.connection?.saveData;
+  // Só rebaixa quem é fraco de verdade; o resto é ajustado medindo os quadros (veja adaptiveQuality)
+  let low = saveData || cores <= 2 || mem <= 2 || (small && cores <= 4 && mem <= 3);
+  if (override === "low") low = true;
+  else if (override === "high") low = false;
   return {
     low,
     small,
     maxDpr: low ? 1.25 : small ? 1.75 : 2,
+    bgDpr: low ? 1 : 1.25,
+    shadows: !low,
     shadowSize: low ? 512 : 1024,
-    texSize: low ? 512 : 1024,
+    texSize: low || small ? 512 : 1024,
+    idleFps: low ? 24 : 30,
   };
 }
 
-/* ---------- Laço único (todas as cenas no mesmo requestAnimationFrame) ---------- */
-const scenes = new Set();
-let raf = 0;
-let last = 0;
+/** Devolve a vez ao navegador (a inicialização do 3D é feita em pedaços, sem travar a rolagem). */
+export const yieldToMain = () => new Promise((r) => (globalThis.scheduler?.yield ? globalThis.scheduler.yield().then(r) : setTimeout(r, 0)));
 
-function frame(t) {
-  raf = 0;
-  const dt = Math.min(0.05, last ? (t - last) / 1000 : 0.016);
-  last = t;
-  let any = false;
+/* ---------- Laço compartilhado ---------- */
+const scenes = new Set();
+let host = null;
+let paused = false;
+
+function tickAll(f) {
+  if (paused) return false;
+  let busy = false;
   for (const s of scenes) {
-    if (s.active) { any = true; try { s.tick(dt, t / 1000); } catch (e) { console.error("[3D]", e); s.fail?.(e); } }
+    if (!s.active || s.dead) continue;
+    try { if (s.tick(f.dt, f.t, f) !== false) busy = true; } catch (e) { console.error("[3D]", e); s.fail?.(e); }
   }
-  if (any && !document.hidden) raf = requestAnimationFrame(frame);
-  else last = 0;
+  return busy;
 }
-export function wake() { if (!raf && !document.hidden) raf = requestAnimationFrame(frame); }
-document.addEventListener("visibilitychange", () => { if (!document.hidden) wake(); });
+
+/** Usa o laço do site; sem ele, cria um laço mínimo próprio. */
+export function useTicker(ticker) {
+  if (host) return;
+  if (ticker) { host = ticker; ticker.add(tickAll); return; }
+  const f = { t: 0, dt: 1 / 60, y: window.scrollY, vel: 0, vw: window.innerWidth, vh: window.innerHeight };
+  let raf = 0, last = 0;
+  const loop = (now) => {
+    raf = 0;
+    f.dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now; f.t = now / 1000;
+    const y = window.scrollY; f.vel += ((y - f.y) / f.dt - f.vel) * Math.min(1, f.dt * 8); f.y = y;
+    f.vw = window.innerWidth; f.vh = window.innerHeight;
+    if (tickAll(f) && !document.hidden) raf = requestAnimationFrame(loop); else last = 0;
+  };
+  host = { wake() { if (!raf && !document.hidden) raf = requestAnimationFrame(loop); } };
+  window.addEventListener("scroll", host.wake, { passive: true });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) host.wake(); });
+}
+export const wake = () => host?.wake();
+
+/** Pausa tudo (ex.: carrinho ou produto aberto por cima da página). */
+export function setPaused(v) { paused = v; if (!v) wake(); }
 
 /**
- * Registra uma cena. `tick(dt, time)` desenha um quadro.
- * A cena só roda enquanto `el` estiver visível na tela.
+ * Registra uma cena. `tick(dt, time, frame)` desenha um quadro (retorna false se não precisa de mais).
+ * Com `el`, a cena só roda enquanto o elemento estiver perto da tela.
  */
-export function registerScene(scene, el, { margin = "120px" } = {}) {
+export function registerScene(scene, el, { margin = "200px" } = {}) {
   scenes.add(scene);
   scene.active = false;
   if (el && "IntersectionObserver" in window) {
-    const io = new IntersectionObserver(([e]) => { scene.active = e.isIntersecting && !scene.dead; if (scene.active) wake(); }, { rootMargin: margin });
+    const io = new IntersectionObserver(([e]) => { scene.visible = e.isIntersecting; scene.active = scene.visible && !scene.dead; scene.onVisible?.(scene.visible); if (scene.active) wake(); }, { rootMargin: margin });
     io.observe(el);
-    scene.unobserve = () => io.disconnect();
   } else {
-    scene.active = true;
+    scene.visible = true;
+    scene.active = !scene.dead;
     wake();
   }
-  return () => { scenes.delete(scene); scene.unobserve?.(); };
+}
+
+/* ---------- Medidas em cache (lidas só quando o layout muda) ---------- */
+const tracked = new Set();
+let bodyRO = null;
+function measureBox(b) { const r = b.el.getBoundingClientRect(); b.top = r.top + window.scrollY; b.height = r.height || 1; }
+/** Posição de um elemento na página, atualizada em resize/mudança de altura (sem custo por quadro). */
+export function trackElement(el) {
+  const box = { el, top: 0, height: 1 };
+  measureBox(box);
+  tracked.add(box);
+  if (!bodyRO) {
+    const all = () => tracked.forEach(measureBox);
+    window.addEventListener("resize", all, { passive: true });
+    if ("ResizeObserver" in window) { bodyRO = new ResizeObserver(all); bodyRO.observe(document.body); }
+    else bodyRO = true;
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(() => measureBox(box)).observe(el);
+  return box;
 }
 
 /* ---------- Renderer ---------- */
-export function createRenderer(canvas, tier, { shadows = false, alpha = true } = {}) {
-  const renderer = new WebGLRenderer({ canvas, antialias: !tier.low, alpha, powerPreference: "high-performance", premultipliedAlpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, tier.maxDpr));
+export function createRenderer(canvas, { antialias = true, alpha = true, shadows = false, dpr = 2 } = {}) {
+  const renderer = new WebGLRenderer({ canvas, antialias, alpha, powerPreference: "high-performance", premultipliedAlpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dpr));
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.toneMapping = ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   if (alpha) renderer.setClearColor(0x000000, 0);
   if (shadows) {
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = PCFSoftShadowMap;
+    renderer.shadowMap.type = PCFShadowMap;
   }
   return renderer;
 }
 
-/** Iluminação de estúdio (reflexos realistas em queijo, azeitona, tomate…). */
-export function studioEnvironment(renderer, scene, intensity = 1) {
+/** Iluminação de estúdio (reflexos realistas em queijo, azeitona, tomate…). Gerada uma vez por renderer. */
+export function studioEnvironment(renderer) {
   const pmrem = new PMREMGenerator(renderer);
-  const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environment = env;
-  scene.environmentIntensity = intensity;
+  const room = new RoomEnvironment();
+  const env = pmrem.fromScene(room, 0.04).texture;
   pmrem.dispose();
+  room.dispose?.();
   return env;
 }
 
-/** Ajusta o tamanho do canvas ao elemento (com ResizeObserver). */
-export function autoResize(renderer, camera, el, onResize) {
-  const apply = () => {
-    const w = Math.max(1, el.clientWidth), h = Math.max(1, el.clientHeight);
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    onResize?.(w, h);
+/** Se o navegador derrubar o WebGL, volta para a versão 2D; se devolver, religa. */
+export function guardContext(renderer, { onLost, onRestored }) {
+  renderer.domElement.addEventListener("webglcontextlost", (e) => { e.preventDefault(); onLost?.(); });
+  renderer.domElement.addEventListener("webglcontextrestored", () => { onRestored?.(); wake(); });
+}
+
+/**
+ * Qualidade adaptativa: mede os quadros enquanto há animação e, se ficar abaixo
+ * de ~45 fps, rebaixa em degraus (resolução, sombras, quantidade de objetos).
+ */
+export function adaptiveQuality(onStep, { maxLevel = 3 } = {}) {
+  let n = 0, sum = 0, level = 0, warm = 2.5;
+  return (dt) => {
+    if (level >= maxLevel || document.hidden) return;
+    if (warm > 0) { warm -= dt; return; }
+    sum += dt; n++;
+    if (n < 90) return;
+    const avg = sum / n;
+    n = 0; sum = 0;
+    if (avg > 1 / 45) { level++; warm = 2; onStep(level); }
   };
-  apply();
-  if ("ResizeObserver" in window) new ResizeObserver(apply).observe(el);
-  else window.addEventListener("resize", apply);
-  return apply;
 }
 
-/** Se o navegador derrubar o WebGL, volta para a versão 2D sem quebrar a página. */
-export function guardContext(renderer, scene, onLost) {
-  renderer.domElement.addEventListener("webglcontextlost", (e) => {
-    e.preventDefault();
-    scene.dead = true;
-    scene.active = false;
-    onLost?.();
-  });
-}
+/* ---------- Palco: um renderer para o topo e a caixa ---------- */
+export function createStage(tier) {
+  const canvas = document.createElement("canvas");
+  canvas.setAttribute("aria-hidden", "true");
+  let dpr = Math.min(window.devicePixelRatio || 1, tier.maxDpr);
+  const renderer = createRenderer(canvas, { antialias: !tier.low, shadows: tier.shadows, dpr });
+  const entries = [];
+  const stage = { renderer, canvas, env: null, current: null, aspect: 1, dead: false, sizeVersion: 0 };
+  // o ambiente PBR é gerado num pedaço separado (ele compila shaders e desenha na GPU)
+  stage.envReady = yieldToMain().then(() => { stage.env = studioEnvironment(renderer); });
 
-/* ---------- Ruído para texturas procedurais ---------- */
-function hash(x, y) {
-  let h = x * 374761393 + y * 668265263;
-  h = (h ^ (h >>> 13)) * 1274126177;
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967295;
-}
-const smooth = (t) => t * t * (3 - 2 * t);
-export function noise2(x, y) {
-  const xi = Math.floor(x), yi = Math.floor(y);
-  const xf = x - xi, yf = y - yi;
-  const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1);
-  const u = smooth(xf), v = smooth(yf);
-  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
-}
-export function fbm(x, y, oct = 4) {
-  let s = 0, a = 0.5, f = 1;
-  for (let i = 0; i < oct; i++) { s += a * noise2(x * f, y * f); f *= 2.03; a *= 0.5; }
-  return s;
-}
+  // tamanho do PRÓPRIO canvas (ele é maior que o container no CSS — antes ficava esticado e borrado)
+  const resize = () => {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h) return;
+    renderer.setPixelRatio(dpr);
+    renderer.setSize(w, h, false);
+    stage.aspect = w / h;
+    stage.sizeVersion++;
+    wake();
+  };
+  if ("ResizeObserver" in window) new ResizeObserver(resize).observe(canvas);
+  else window.addEventListener("resize", resize);
 
-/** Gera uma textura desenhando pixel a pixel (rápido o bastante para 512–1024 px). */
-export function pixelTexture(w, h, fn, { repeat = false, colorSpace = SRGBColorSpace } = {}) {
-  const c = document.createElement("canvas");
-  c.width = w; c.height = h;
-  const ctx = c.getContext("2d");
-  const img = ctx.createImageData(w, h);
-  const d = img.data;
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      const [r, g, b, a = 255] = fn(x / w, y / h, x, y);
-      const i = (y * w + x) * 4;
-      d[i] = r; d[i + 1] = g; d[i + 2] = b; d[i + 3] = a;
-    }
+  function show(entry) {
+    if (stage.current === entry) return;
+    stage.current = entry;
+    entry.container.appendChild(canvas);
+    canvas.className = entry.cls;
+    resize();
+    entries.forEach((e) => e.container.classList.toggle("is-3d", e === entry && e.ready && !stage.dead));
   }
-  ctx.putImageData(img, 0, 0);
-  return wrapCanvas(c, { repeat, colorSpace });
+  function pick() {
+    const vis = entries.filter((e) => e.visible && e.ready);
+    if (!vis.length) return;
+    if (vis.length === 1) return show(vis[0]);
+    // dois perto da tela (tela muito alta): fica com o mais próximo do centro
+    const mid = window.innerHeight / 2;
+    vis.sort((a, b) => Math.abs(a.container.getBoundingClientRect().top - mid) - Math.abs(b.container.getBoundingClientRect().top - mid));
+    show(vis[0]);
+  }
+
+  stage.add = (entry) => {
+    entries.push(entry);
+    const sc = entry.scene;
+    const baseTick = sc.tick;
+    sc.tick = (dt, t, f) => (stage.current === entry && !stage.dead ? baseTick(dt, t, f) : false);
+    sc.onVisible = (v) => { entry.visible = v; pick(); };
+    registerScene(sc, entry.container, { margin: "250px" });
+  };
+  stage.markReady = (entry) => { entry.ready = true; pick(); if (stage.current === entry) entry.container.classList.add("is-3d"); };
+  /** Desenha a cena; ajusta a câmera se o palco mudou de tamanho. */
+  stage.render = (scene, camera) => {
+    if (camera.userData.sizeVersion !== stage.sizeVersion) {
+      camera.aspect = stage.aspect;
+      camera.updateProjectionMatrix();
+      camera.userData.sizeVersion = stage.sizeVersion;
+    }
+    renderer.render(scene, camera);
+  };
+  stage.setDpr = (v) => { dpr = Math.max(1, Math.min(v, window.devicePixelRatio || 1)); resize(); };
+  stage.quality = adaptiveQuality((level) => {
+    if (level === 1) stage.setDpr(dpr - 0.25);
+    else if (level === 2) { renderer.shadowMap.enabled = false; entries.forEach((e) => e.scene.dropShadows?.()); stage.setDpr(dpr - 0.25); }
+    else stage.setDpr(1);
+  });
+
+  guardContext(renderer, {
+    onLost() { stage.dead = true; entries.forEach((e) => e.container.classList.remove("is-3d")); },
+    onRestored() { stage.dead = false; pick(); if (stage.current?.ready) stage.current.container.classList.add("is-3d"); },
+  });
+  return stage;
 }
 
-export function wrapCanvas(canvas, { repeat = false, colorSpace = SRGBColorSpace, anisotropy = 4 } = {}) {
-  const t = new CanvasTexture(canvas);
-  t.colorSpace = colorSpace;
-  t.anisotropy = anisotropy;
-  t.minFilter = LinearMipmapLinearFilter;
-  if (repeat) { t.wrapS = t.wrapT = RepeatWrapping; }
-  t.needsUpdate = true;
-  return t;
-}
-
-export function canvas2d(w, h) {
-  const c = document.createElement("canvas");
-  c.width = w; c.height = h;
-  return [c, c.getContext("2d")];
-}
-
+/* ---------- Matemática ---------- */
 export const lerp = (a, b, t) => a + (b - a) * t;
 export const clamp01 = (v) => Math.max(0, Math.min(1, v));
 export const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 export const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+export const easeOutBack = (t, s = 1.70158) => 1 + (s + 1) * Math.pow(t - 1, 3) + s * Math.pow(t - 1, 2);
 /** Aproximação suave e independente de FPS. */
 export const damp = (a, b, lambda, dt) => lerp(a, b, 1 - Math.exp(-lambda * dt));
-
-/** Progresso (0→1) de um elemento atravessando a tela. */
-export function scrollProgress(el, { start = 1, end = 0 } = {}) {
-  const r = el.getBoundingClientRect();
-  const vh = window.innerHeight;
-  // 0 quando o topo do elemento está em `start`*vh; 1 quando o fim do elemento chega em `end`*vh
-  const from = vh * start, to = vh * end - r.height;
-  return clamp01((from - r.top) / (from - to));
+/** Mola (com leve balanço): devolve o novo estado { x, v }. */
+export function spring(st, target, dt, k = 120, c = 14) {
+  const steps = Math.max(1, Math.ceil(dt / (1 / 120)));
+  const h = dt / steps;
+  for (let i = 0; i < steps; i++) { const a = (target - st.x) * k - st.v * c; st.v += a * h; st.x += st.v * h; }
+  return st;
 }
-
-export { Scene };

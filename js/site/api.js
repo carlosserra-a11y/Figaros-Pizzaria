@@ -21,6 +21,20 @@ export function imgUrl(path) {
   return new URL(path, SITE_ROOT).href;
 }
 
+// Fotos do cardápio (assets/img/menu/*.webp) existem em 320, 480 e 640 px.
+const MENU_PHOTO = /^(.*\/assets\/img\/menu\/[^/?#]+)\.webp$/;
+/** Versão pequena (miniaturas): baixa ~17 KB em vez de ~37 KB. */
+export function thumbUrl(path, w = 320) {
+  const url = imgUrl(path);
+  const m = MENU_PHOTO.exec(url);
+  return m ? `${m[1]}-${w}.webp` : url;
+}
+/** srcset para o navegador escolher o tamanho certo da foto ("" se não houver versões). */
+export function photoSrcset(url) {
+  const m = MENU_PHOTO.exec(url);
+  return m ? `${m[1]}-320.webp 320w, ${m[1]}-480.webp 480w, ${url} 640w` : "";
+}
+
 async function request(path, { method = "GET", body, timeout = 8000 } = {}) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeout);
@@ -63,8 +77,13 @@ function filterActive(menu) {
   };
 }
 
+/** Só existe servidor se ele foi configurado ou se o site não está num host estático (GitHub Pages). */
+const STATIC_HOST = !metaApi && /\.github\.io$/i.test(location.hostname);
+
 export async function loadMenu() {
   try {
+    // No GitHub Pages não há API: pedir api/menu só gerava um erro 404 e atrasava o cardápio
+    if (STATIC_HOST) throw new Error("site estático");
     const menu = await request("api/menu", { timeout: 6000 });
     state.online = true;
     return menu;

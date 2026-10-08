@@ -1,114 +1,178 @@
 /* ============================================================
-   Animações ligadas à rolagem (sem bibliotecas):
-   - barra de progresso tricolor
-   - parallax por camadas ([data-depth])
+   Animações ligadas à rolagem (no laço único de motion.js):
+   - barra de progresso tricolor (CSS puro quando o navegador suporta)
+   - parallax por camadas ([data-depth]) com medidas em cache
    - faixa de sabores que acelera/inclina com a velocidade da rolagem
+   - "Como pedir": a caixa abre e os passos acendem conforme a rolagem
    - cartões que entram em 3D quando aparecem na tela
-   Tudo desliga com "reduzir movimento".
+   Nada aqui lê o layout a cada quadro: as medidas só mudam em resize.
    ============================================================ */
-import { reducedMotion } from "./util.js";
+import { ticker, motion, onReducedMotion } from "./motion.js";
 
-const RM = reducedMotion();
-const state = { y: window.scrollY, lastY: window.scrollY, vel: 0, raf: 0, t: 0 };
+const clamp01 = (v) => Math.max(0, Math.min(1, v));
+const scrollTimeline = typeof CSS !== "undefined" && CSS.supports?.("animation-timeline: scroll()");
+
 const depthEls = [];
+let bar = null, maxScroll = 1, lastY = -1, dirty = true;
 let marquee = null;
+const story = { el: null, pin: null, steps: [], top: 0, h: 1, pinned: false, p: 0, active: -1 };
 
+/* ---------- Medidas (só em resize / mudança de altura da página) ---------- */
 function measure() {
   for (const d of depthEls) {
-    const host = d.el.parentElement;
-    const r = host.getBoundingClientRect();
+    const r = d.host.getBoundingClientRect();
     d.top = r.top + window.scrollY;
     d.h = r.height;
   }
-}
-
-function update(now) {
-  state.raf = 0;
-  const dt = Math.min(0.05, state.t ? (now - state.t) / 1000 : 0.016);
-  state.t = now;
-  const y = window.scrollY;
-  const instant = (y - state.lastY) / Math.max(dt, 0.001);
-  state.lastY = y;
-  state.vel += (instant - state.vel) * Math.min(1, dt * 8);
-
-  // barra de progresso
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  const bar = document.getElementById("scrollProgress");
-  if (bar) bar.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
-
-  if (!RM) {
-    const vh = window.innerHeight, mid = y + vh / 2;
-    for (const d of depthEls) {
-      if (d.top > mid + vh * 1.5 || d.top + d.h < mid - vh * 1.5) continue;
-      const off = (d.top + d.h / 2 - mid) * d.depth;
-      d.el.style.setProperty("--py", `${off.toFixed(1)}px`);
-    }
-    if (marquee && marquee.visible) {
-      const speed = 60 + Math.min(900, Math.abs(state.vel) * 0.35);
-      marquee.dir = state.vel < -40 ? 1 : state.vel > 40 ? -1 : marquee.dir;
-      marquee.x += marquee.dir * speed * dt;
-      const half = marquee.track.scrollWidth / 2 || 1;
-      if (marquee.x < -half) marquee.x += half;
-      if (marquee.x > 0) marquee.x -= half;
-      const skew = Math.max(-8, Math.min(8, state.vel * -0.004));
-      marquee.track.style.transform = `translate3d(${marquee.x.toFixed(1)}px,0,0) skewX(${skew.toFixed(2)}deg)`;
-    }
+  maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  if (story.el) {
+    const r = story.el.getBoundingClientRect();
+    story.top = r.top + window.scrollY;
+    story.h = r.height;
+    story.pinned = !!story.pin && getComputedStyle(story.pin).position === "sticky";
   }
-  // continua animando enquanto houver movimento (ou a faixa estiver visível)
-  if (Math.abs(state.vel) > 2 || (marquee && marquee.visible && !RM)) state.raf = requestAnimationFrame(update);
-  else state.t = 0;
+  dirty = true;
+  ticker.wake();
 }
 
-const kick = () => { if (!state.raf) state.raf = requestAnimationFrame(update); };
+/* ---------- Quadro ---------- */
+function parallax(y, vh) {
+  const mid = y + vh / 2;
+  for (const d of depthEls) {
+    if (d.top > mid + vh * 1.5 || d.top + d.h < mid - vh * 1.5) continue;
+    const off = (d.top + d.h / 2 - mid) * d.depth;
+    if (Math.abs(off - d.last) < 0.25) continue;
+    d.last = off;
+    d.el.style.setProperty("--py", `${off.toFixed(1)}px`);
+  }
+}
+
+function updateStory(y, vh) {
+  if (!story.el) return;
+  // fixa na tela (computador): 0→1 enquanto a seção está presa; senão: 0→1 enquanto atravessa a tela
+  const p = story.pinned
+    ? clamp01((y - story.top) / Math.max(1, story.h - vh))
+    : clamp01((y + vh * 0.95 - story.top) / (vh * 0.7 + story.h));
+  if (Math.abs(p - story.p) > 0.001 || story.active < 0) {
+    story.p = p;
+    story.el.style.setProperty("--story", p.toFixed(3));
+  }
+  const idx = p < 0.3 ? 0 : p < 0.62 ? 1 : 2;
+  if (idx !== story.active) {
+    story.active = idx;
+    story.steps.forEach((s, i) => { s.classList.toggle("is-active", i === idx); s.classList.toggle("is-done", i < idx); });
+  }
+}
+/** Progresso (0–1) da história da caixa — usado pelo 3D. */
+export const getStoryProgress = () => story.p;
+
+function update(f) {
+  const y = f.y;
+  if (y !== lastY || dirty) {
+    lastY = y;
+    dirty = false;
+    if (!scrollTimeline && bar) bar.style.transform = `scaleX(${Math.min(1, y / maxScroll).toFixed(4)})`;
+    if (!motion.reduced) parallax(y, f.vh);
+    updateStory(y, f.vh);
+  }
+  if (marquee && marquee.visible && !motion.reduced) {
+    const speed = 60 + Math.min(900, Math.abs(f.vel) * 0.35);
+    marquee.dir = f.vel < -40 ? 1 : f.vel > 40 ? -1 : marquee.dir;
+    marquee.x += marquee.dir * speed * f.dt;
+    const half = marquee.half || 1;
+    if (marquee.x < -half) marquee.x += half;
+    if (marquee.x > 0) marquee.x -= half;
+    const skew = Math.max(-8, Math.min(8, f.vel * -0.004));
+    marquee.track.style.transform = `translate3d(${marquee.x.toFixed(1)}px,0,0) skewX(${skew.toFixed(2)}deg)`;
+    return true; // a faixa anda sozinha enquanto está na tela
+  }
+  return false;
+}
 
 export function initScrollFx() {
-  document.querySelectorAll("[data-depth]").forEach((el) => depthEls.push({ el, depth: Number(el.dataset.depth) || 0, top: 0, h: 0 }));
+  bar = document.getElementById("scrollProgress");
+  if (scrollTimeline) document.documentElement.classList.add("sdt");
+
+  document.querySelectorAll("[data-depth]").forEach((el) => depthEls.push({ el, host: el.parentElement, depth: Number(el.dataset.depth) || 0, top: 0, h: 0, last: 0 }));
+
   const track = document.getElementById("marqueeTrack");
-  if (track && !RM) {
+  if (track && !motion.reduced) {
     document.documentElement.classList.add("js-marquee");
-    marquee = { track, x: 0, dir: -1, visible: true };
-    new IntersectionObserver(([e]) => { marquee.visible = e.isIntersecting; if (e.isIntersecting) kick(); }).observe(track.parentElement);
+    marquee = { track, x: 0, dir: -1, visible: true, half: 0 };
+    const measureTrack = () => { marquee.half = track.scrollWidth / 2; };
+    new IntersectionObserver(([e]) => { marquee.visible = e.isIntersecting; if (e.isIntersecting) { measureTrack(); ticker.wake(); } }).observe(track.parentElement);
+    if ("ResizeObserver" in window) new ResizeObserver(measureTrack).observe(track);
   }
+
+  story.el = document.getElementById("como-funciona");
+  story.pin = story.el?.querySelector(".steps-pin") || null;
+  story.steps = story.el ? [...story.el.querySelectorAll(".step")] : [];
+
   measure();
-  window.addEventListener("scroll", kick, { passive: true });
-  window.addEventListener("resize", () => { measure(); kick(); });
-  if ("ResizeObserver" in window) new ResizeObserver(() => { measure(); kick(); }).observe(document.body);
-  kick();
+  window.addEventListener("resize", measure, { passive: true });
+  if ("ResizeObserver" in window) new ResizeObserver(measure).observe(document.body);
+  onReducedMotion((r) => { if (r) depthEls.forEach((d) => { d.el.style.removeProperty("--py"); d.last = 0; }); measure(); });
+  ticker.add(update);
+  ticker.add(safetyTick);
 }
 
 /* ---------- Cartões que entram em 3D ---------- */
 let cardObserver;
+function settle(card) {
+  cardObserver?.unobserve(card);
+  if (card.classList.contains("seen")) return;
+  card.classList.add("seen");
+  // terminada a entrada, tira a transição longa (senão o tilt do mouse fica atrasado)
+  let done = false;
+  const onEnd = (ev) => { if (ev.target === card && ev.propertyName === "transform") finish(); };
+  const finish = () => {
+    if (done) return;
+    done = true;
+    card.removeEventListener("transitionend", onEnd);
+    card.classList.remove("pre");
+    card.style.removeProperty("--d");
+  };
+  card.addEventListener("transitionend", onEnd);
+  setTimeout(finish, 1600);
+}
+
 export function observeCards(root) {
-  const cards = root.querySelectorAll(".card:not(.seen)");
-  if (RM || !("IntersectionObserver" in window)) { cards.forEach((c) => c.classList.add("seen")); return; }
-  cardObserver ||= new IntersectionObserver((entries) => entries.forEach((e) => {
-    if (!e.isIntersecting) return;
-    e.target.classList.add("seen");
-    cardObserver.unobserve(e.target);
-  }), { rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
+  const cards = [...root.querySelectorAll(".card:not(.seen)")];
+  if (motion.reduced || !("IntersectionObserver" in window)) { cards.forEach((c) => c.classList.add("seen")); return; }
+  cardObserver ||= new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) settle(e.target); }), { rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
   const vh = window.innerHeight;
+  // lê todas as posições ANTES de mexer nas classes (evita recalcular o layout a cada cartão)
+  const tops = cards.map((c) => c.getBoundingClientRect().top);
   cards.forEach((c, i) => {
     // cartões que já estão na tela aparecem na hora; só os de baixo esperam a rolagem
-    if (c.getBoundingClientRect().top < vh * 0.92) { c.classList.add("seen"); return; }
+    if (tops[i] < vh * 0.92) { c.classList.add("seen"); return; }
     c.style.setProperty("--d", `${(i % 4) * 70}ms`);
     c.classList.add("pre");
     cardObserver.observe(c);
   });
-  scheduleSafety();
+  requestSafety();
 }
 
-/** Garantia: se o aviso de "entrou na tela" atrasar, nenhum cartão visível fica escondido. */
-let safetyTimer = 0;
-function scheduleSafety() {
-  clearTimeout(safetyTimer);
-  safetyTimer = setTimeout(() => {
-    const vh = window.innerHeight;
-    document.querySelectorAll(".card.pre:not(.seen)").forEach((c) => {
-      if (c.getBoundingClientRect().top < vh) { c.classList.add("seen"); cardObserver?.unobserve(c); }
-    });
-    document.querySelectorAll(".reveal:not(.in)").forEach((el) => {
-      if (el.getBoundingClientRect().top < vh) el.classList.add("in");
-    });
-  }, 900);
+/* ---------- Garantia: se o aviso de "entrou na tela" atrasar, nada visível fica escondido ---------- */
+let needsSafety = false, safetyAt = 0, safetyTimer = 0;
+function runSafety() {
+  const vh = window.innerHeight;
+  const els = document.querySelectorAll(".card.pre:not(.seen), .reveal:not(.in), .split:not(.in)");
+  const tops = [...els].map((el) => el.getBoundingClientRect().top);
+  let left = 0;
+  els.forEach((el, i) => {
+    if (tops[i] >= vh) { left++; return; }
+    if (el.classList.contains("card")) settle(el);
+    else el.classList.add("in");
+  });
+  needsSafety = left > 0;
 }
-window.addEventListener("scroll", () => { if (document.querySelector(".card.pre:not(.seen), .reveal:not(.in)")) scheduleSafety(); }, { passive: true });
+function safetyTick(f) {
+  if (needsSafety && f.t >= safetyAt) { safetyAt = f.t + 0.5; runSafety(); }
+  return false;
+}
+export function requestSafety() {
+  needsSafety = true;
+  clearTimeout(safetyTimer);
+  safetyTimer = setTimeout(runSafety, 900);
+}

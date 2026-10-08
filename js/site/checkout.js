@@ -2,7 +2,7 @@
    Gaveta do carrinho + finalização do pedido.
    ============================================================ */
 import { html, raw, $, setHTML, brl, brlC, storage, maskPhone, maskCep, norm } from "./util.js";
-import { imgUrl, state as apiState, createOrder } from "./api.js";
+import { thumbUrl, state as apiState, createOrder } from "./api.js";
 import { openLayer, closeLayer, isOpen } from "./dialog.js";
 import { cart } from "./cart.js";
 import { toCents, fromCents, buildWhatsAppText, PAYMENT_LABELS, priceCart, parseDecimal } from "../shared/pricing.js";
@@ -55,7 +55,7 @@ function upsellHtml() {
   const hasPizza = cart.items.some((i) => { const p = idx.products.get(i.productId); return p && p.kind !== "simple"; });
   if (!drinks.length || !hasPizza) return "";
   return html`<div class="upsell"><h4>Que tal uma bebida gelada? 🥤</h4><div class="upsell-row">
-    ${drinks.map((d) => html`<button type="button" class="up" data-upsell="${d.id}"><img src="${imgUrl(d.image)}" alt="" loading="lazy"><span>${d.name}</span><b>+ ${brl(d.price)}</b></button>`)}
+    ${drinks.map((d) => html`<button type="button" class="up" data-upsell="${d.id}"><img src="${thumbUrl(d.image)}" alt="" loading="lazy"><span>${d.name}</span><b>+ ${brl(d.price)}</b></button>`)}
   </div></div>`;
 }
 
@@ -73,7 +73,7 @@ function renderCart() {
       ${items.map((it, i) => {
         const p = totals.items[i];
         return html`<div class="cart-item">
-          <img src="${imgUrl(p.image)}" alt="" loading="lazy">
+          <img src="${thumbUrl(p.image)}" alt="" loading="lazy">
           <div>
             <h4>${p.title}</h4>
             ${p.lines.length ? html`<ul>${p.lines.map((l) => html`<li>${l}</li>`)}</ul>` : ""}

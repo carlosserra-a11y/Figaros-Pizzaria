@@ -3,7 +3,7 @@
    combos (partes + bebidas), esfihas (unidades por sabor) e simples.
    ============================================================ */
 import { html, raw, $, setHTML, brl, brlC, norm, esc } from "./util.js";
-import { imgUrl } from "./api.js";
+import { imgUrl, thumbUrl } from "./api.js";
 import { openLayer, closeLayer } from "./dialog.js";
 import { flavorsOf, flavorPriceCents, priceItem, cheapestFlavorCents, combineFlavorPrices, MAX_NOTES } from "../shared/pricing.js";
 import { flyToCart, toast } from "./fx.js";
@@ -72,7 +72,7 @@ function pizzaSvg(flavors, slices = 8, maxFlavors = 1) {
     const x0 = C + R * Math.cos(a0), y0 = C + R * Math.sin(a0), x1 = C + R * Math.cos(a1), y1 = C + R * Math.sin(a1);
     return `M ${C} ${C} L ${x0.toFixed(2)} ${y0.toFixed(2)} A ${R} ${R} 0 ${1 / n > 0.5 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z`;
   };
-  const defs = flavors.map((f, i) => `<pattern id="pz${i}" patternUnits="userSpaceOnUse" width="100" height="100"><image href="${esc(imgUrl(f.image))}" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid slice"/></pattern>`).join("");
+  const defs = flavors.map((f, i) => `<pattern id="pz${i}" patternUnits="userSpaceOnUse" width="100" height="100"><image href="${esc(thumbUrl(f.image, 480))}" x="0" y="0" width="100" height="100" preserveAspectRatio="xMidYMid slice"/></pattern>`).join("");
   const fills = flavors.length
     ? flavors.map((f, i) => `<path class="slice slice-new" d="${wedge(i)}" fill="url(#pz${i})"/>`).join("")
     : `<circle cx="50" cy="50" r="${R}" fill="#f0c26b"/><circle cx="50" cy="50" r="${R - 6}" fill="#e9a94f" opacity=".5"/><text x="50" y="55" text-anchor="middle" font-size="9" font-weight="800" fill="#7a4a1c">escolha os sabores</text>`;
@@ -138,7 +138,7 @@ function slotsHtml(flavorIds, max, sizeId, target, productId) {
     if (!f) return "";
     const c = flavorPriceCents(f, sizeId);
     return html`<div class="slot">
-      <img src="${imgUrl(f.image)}" alt="" loading="lazy">
+      <img src="${thumbUrl(f.image)}" alt="" loading="lazy">
       <div class="grow"><strong>${flavorIds.length > 1 ? `1/${flavorIds.length} ` : ""}${f.name}</strong><small>${f.tier === "especial" ? "Especial · " : ""}${c !== null ? brlC(c) : "indisponível neste tamanho"}</small></div>
       <button type="button" class="x" data-swap="${i}" data-target="${target}" aria-label="Trocar ${f.name}">⇄</button>
       <button type="button" class="x" data-remove-flavor="${i}" data-target="${target}" aria-label="Remover ${f.name}">×</button>
@@ -201,7 +201,7 @@ function bodyHtml() {
         ${flavorsOf(idx, p.id).map((f) => {
           const v = S.units[f.id] || 0;
           return html`<div class="unit-row">
-            <img src="${imgUrl(f.image)}" alt="" loading="lazy">
+            <img src="${thumbUrl(f.image)}" alt="" loading="lazy">
             <div class="grow"><strong>${f.name}</strong><small>${f.description}</small></div>
             <div class="stepper sm"><button type="button" data-unit="${f.id}" data-delta="-1" aria-label="Menos ${f.name}" ${v <= 0 ? "disabled" : ""}>−</button><output>${v}</output><button type="button" data-unit="${f.id}" data-delta="1" aria-label="Mais ${f.name}" ${!size || total >= max ? "disabled" : ""}>+</button></div>
           </div>`;
@@ -395,7 +395,7 @@ function openPicker(target, replaceIndex) {
       const unavailable = sizeId && flavorPriceCents(f, sizeId) === null;
       const already = current.includes(f.id) && current[replaceIndex] !== f.id;
       return html`<button type="button" class="pick" data-pick="${f.id}" aria-disabled="${unavailable || already}">
-        <img src="${imgUrl(f.image)}" alt="" loading="lazy">
+        <img src="${thumbUrl(f.image)}" alt="" loading="lazy">
         <span><strong>${f.name}${f.tier === "especial" ? " ⭐" : ""}</strong><small>${already ? "Já escolhido" : f.description}</small></span>
         <span class="pp">${priceLabel(f)}</span>
       </button>`;

@@ -47,6 +47,8 @@ export function createApp({ dataDir, setupCode = null, corsOrigins = [], trustPr
   app.get("/admin", (req, res, next) => (req.originalUrl.split("?")[0].endsWith("/") ? next() : res.redirect(302, "/admin/")));
   app.use("/admin", express.static(join(ROOT, "admin"), { ...staticOpts(0), index: "index.html" }));
   for (const f of ["robots.txt", "manifest.webmanifest", "creditos.html"]) app.get(`/${f}`, (req, res) => res.sendFile(join(ROOT, f)));
+  // Service worker: sempre revalidado, para atualizações chegarem na hora
+  app.get("/sw.js", (req, res) => res.set("Cache-Control", "no-cache").sendFile(join(ROOT, "sw.js")));
   app.get("/favicon.ico", (req, res) => res.sendFile(join(ROOT, "assets", "img", "favicon.png")));
   app.get(["/", "/index.html"], (req, res) => res.sendFile(join(ROOT, "index.html")));
 
