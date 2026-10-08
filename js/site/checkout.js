@@ -8,6 +8,7 @@ import { cart } from "./cart.js";
 import { toCents, fromCents, buildWhatsAppText, PAYMENT_LABELS, priceCart, parseDecimal } from "../shared/pricing.js";
 import { toast, confetti, flyToCart } from "./fx.js";
 import { rememberOrder, openOrders } from "./orders.js";
+import { icon } from "./icons.js";
 
 let idx = null;
 let menu = null;
@@ -54,7 +55,7 @@ function upsellHtml() {
   const drinks = [...idx.products.values()].filter((p) => p.categoryId === "bebidas" && p.kind === "simple" && !inCart.has(p.id)).slice(0, 8);
   const hasPizza = cart.items.some((i) => { const p = idx.products.get(i.productId); return p && p.kind !== "simple"; });
   if (!drinks.length || !hasPizza) return "";
-  return html`<div class="upsell"><h4>Que tal uma bebida gelada? 🥤</h4><div class="upsell-row">
+  return html`<div class="upsell"><h4>${icon("soda")}Que tal uma bebida gelada?</h4><div class="upsell-row">
     ${drinks.map((d) => html`<button type="button" class="up" data-upsell="${d.id}"><img src="${thumbUrl(d.image)}" alt="" loading="lazy"><span>${d.name}</span><b>+ ${brl(d.price)}</b></button>`)}
   </div></div>`;
 }
@@ -113,7 +114,7 @@ $("#cartDrawer").addEventListener("click", (e) => {
     setTimeout(() => openBuilderFn({ productId: it.productId, edit: it }), 220);
     return;
   }
-  if (b.dataset.upsell) { cart.add({ productId: b.dataset.upsell, qty: 1 }); flyToCart(b.querySelector("img")?.src, b); toast("Bebida adicionada 🥤", "ok"); return; }
+  if (b.dataset.upsell) { cart.add({ productId: b.dataset.upsell, qty: 1 }); flyToCart(b.querySelector("img")?.src, b); toast("Bebida adicionada", "ok"); return; }
   if (b.id === "clearCart") { if (confirm("Esvaziar o carrinho?")) cart.clear(); return; }
   if (b.id === "goCheckout") { closeLayer($("#cartLayer"), { silent: true }); setTimeout(openCheckout, 220); }
 });
@@ -159,10 +160,10 @@ function renderCheckout() {
     <div class="dialog-scroll">
       <div class="dialog-head"><h2 id="checkoutTitle">Finalizar pedido</h2><p>Confira seus dados — leva menos de 1 minuto.</p></div>
       <form class="ck-body" id="ckForm" novalidate>
-        ${closed ? html`<div class="closed-box"><span>🌙</span><div>${menu.status?.label || "Fechado agora"}${menu.status?.detail ? ` — ${menu.status.detail}` : ""}. Você pode deixar tudo pronto e enviar quando abrirmos.</div></div>` : ""}
+        ${closed ? html`<div class="closed-box">${icon("moon")}<div>${menu.status?.label || "Fechado agora"}${menu.status?.detail ? ` — ${menu.status.detail}` : ""}. Você pode deixar tudo pronto e enviar quando abrirmos.</div></div>` : ""}
 
         <section class="ck-section">
-          <h3>👤 Seus dados</h3>
+          <h3>${icon("user")}Seus dados</h3>
           <div class="form-grid">
             ${field("name", "Nome completo", ck.name, { cls: "c3", ac: "name", attrs: 'maxlength="80"' })}
             ${field("phone", "WhatsApp / telefone", ck.phone, { cls: "c3", type: "tel", ac: "tel-national", attrs: 'inputmode="tel" maxlength="16" placeholder="(48) 99999-9999"' })}
@@ -170,15 +171,15 @@ function renderCheckout() {
         </section>
 
         <section class="ck-section">
-          <h3>🛵 Como você quer receber?</h3>
+          <h3>${icon("scooter")}Como você quer receber?</h3>
           <div class="seg" role="radiogroup" aria-label="Entrega ou retirada">
-            ${store.deliveryEnabled !== false ? html`<button type="button" class="opt" role="radio" aria-checked="${ck.mode === "delivery"}" data-mode="delivery"><span class="ico">🛵</span><span class="t">Entrega</span><span class="s">${store.etaDelivery || "no seu endereço"}</span></button>` : ""}
-            ${store.pickupEnabled !== false ? html`<button type="button" class="opt" role="radio" aria-checked="${ck.mode === "pickup"}" data-mode="pickup"><span class="ico">🏃</span><span class="t">Retirar</span><span class="s">${store.etaPickup || "no balcão, sem taxa"}</span></button>` : ""}
+            ${store.deliveryEnabled !== false ? html`<button type="button" class="opt" role="radio" aria-checked="${ck.mode === "delivery"}" data-mode="delivery">${icon("scooter")}<span class="t">Entrega</span><span class="s">${store.etaDelivery || "no seu endereço"}</span></button>` : ""}
+            ${store.pickupEnabled !== false ? html`<button type="button" class="opt" role="radio" aria-checked="${ck.mode === "pickup"}" data-mode="pickup">${icon("bag")}<span class="t">Retirar</span><span class="s">${store.etaPickup || "no balcão, sem taxa"}</span></button>` : ""}
           </div>
         </section>
 
         ${ck.mode === "delivery" ? html`<section class="ck-section">
-          <h3>📍 Endereço de entrega</h3>
+          <h3>${icon("pin")}Endereço de entrega</h3>
           <div class="form-grid">
             ${field("cep", "CEP", a.cep, { cls: "c2 keep", attrs: 'inputmode="numeric" maxlength="9" placeholder="88130-000"', ac: "postal-code", hint: ck.cepInfo })}
             ${field("street", "Rua / avenida", a.street, { cls: "c4 keep", ac: "address-line1", attrs: 'maxlength="120"' })}
@@ -194,24 +195,24 @@ function renderCheckout() {
               : field("district", "Bairro", a.district, { cls: "c3", attrs: 'maxlength="60"' })}
             ${field("reference", "Ponto de referência", a.reference, { cls: "c3", attrs: 'maxlength="100" placeholder="Opcional"' })}
           </div>
-        </section>` : html`<section class="ck-section"><h3>📍 Retirada</h3><p class="hint" style="font-weight:700">${store.address}</p></section>`}
+        </section>` : html`<section class="ck-section"><h3>${icon("bag")}Retirada</h3><p class="hint" style="font-weight:700">${store.address}</p></section>`}
 
         <section class="ck-section">
-          <h3>💳 Pagamento <small style="font-weight:700;color:var(--ink-3)">(na entrega/retirada)</small></h3>
+          <h3>${icon("card")}Pagamento <small style="font-weight:700;color:var(--ink-3)">(na entrega/retirada)</small></h3>
           <div class="seg" role="radiogroup" aria-label="Forma de pagamento">
-            ${["pix", "credito", "debito", "dinheiro"].map((m) => html`<button type="button" class="opt" role="radio" aria-checked="${ck.payment === m}" data-pay="${m}"><span class="ico">${{ pix: "💠", credito: "💳", debito: "💳", dinheiro: "💵" }[m]}</span><span class="t">${{ pix: "PIX", credito: "Crédito", debito: "Débito", dinheiro: "Dinheiro" }[m]}</span></button>`)}
+            ${["pix", "credito", "debito", "dinheiro"].map((m) => html`<button type="button" class="opt" role="radio" aria-checked="${ck.payment === m}" data-pay="${m}">${icon({ pix: "pix", credito: "card", debito: "card", dinheiro: "cash" }[m])}<span class="t">${{ pix: "PIX", credito: "Crédito", debito: "Débito", dinheiro: "Dinheiro" }[m]}</span></button>`)}
           </div>
           ${ck.payment === "dinheiro" ? html`<div class="form-grid" style="margin-top:12px">${field("changeFor", "Troco para quanto?", ck.changeFor, { cls: "c3", attrs: 'inputmode="decimal" placeholder="Ex.: 100 (deixe vazio se não precisar)"' })}</div>` : ""}
           ${ck.payment === "pix" ? html`<p class="hint" style="margin-top:8px">Enviamos a chave PIX pelo WhatsApp junto com a confirmação.</p>` : ""}
         </section>
 
         <section class="ck-section">
-          <h3>📝 Observações do pedido</h3>
+          <h3>${icon("note")}Observações do pedido</h3>
           <textarea class="textarea" id="ck_notes" name="notes" maxlength="300" rows="2" placeholder="Ex.: interfone com defeito, me liga quando chegar.">${ck.notes}</textarea>
         </section>
 
         <section class="ck-section">
-          <h3>🧾 Resumo</h3>
+          <h3>${icon("receipt")}Resumo</h3>
           <div class="summary">
             ${c.items.map((p) => html`<div class="it"><span>${p.qty}× ${p.title}</span><span>${brlC(p.totalCents)}</span></div>`)}
             <hr>

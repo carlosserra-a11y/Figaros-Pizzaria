@@ -7,6 +7,7 @@ import { imgUrl, thumbUrl } from "./api.js";
 import { openLayer, closeLayer } from "./dialog.js";
 import { flavorsOf, flavorPriceCents, priceItem, cheapestFlavorCents, combineFlavorPrices, MAX_NOTES } from "../shared/pricing.js";
 import { flyToCart, toast } from "./fx.js";
+import { icon } from "./icons.js";
 
 const layer = () => $("#productLayer");
 const dlg = () => $("#productDialog");
@@ -140,7 +141,7 @@ function slotsHtml(flavorIds, max, sizeId, target, productId) {
     return html`<div class="slot">
       <img src="${thumbUrl(f.image)}" alt="" loading="lazy">
       <div class="grow"><strong>${flavorIds.length > 1 ? `1/${flavorIds.length} ` : ""}${f.name}</strong><small>${f.tier === "especial" ? "Especial · " : ""}${c !== null ? brlC(c) : "indisponível neste tamanho"}</small></div>
-      <button type="button" class="x" data-swap="${i}" data-target="${target}" aria-label="Trocar ${f.name}">⇄</button>
+      <button type="button" class="x" data-swap="${i}" data-target="${target}" aria-label="Trocar ${f.name}">${icon("swap")}</button>
       <button type="button" class="x" data-remove-flavor="${i}" data-target="${target}" aria-label="Remover ${f.name}">×</button>
     </div>`;
   });
@@ -196,7 +197,7 @@ function bodyHtml() {
     const max = size?.units || 0;
     parts.push(html`<section>
       ${stepTitle(n++, "Sabores", size && total === max)}
-      ${size ? html`<div class="min-bar"><p>${total === max ? "Tudo certo! 🎉" : `Escolha mais ${max - total} de ${max}`}</p><div class="progress ${total === max ? "full" : ""}"><i style="width:${Math.min(100, (total / max) * 100)}%"></i></div></div>` : html`<p class="counter" style="text-align:left">Escolha a quantidade primeiro.</p>`}
+      ${size ? html`<div class="min-bar"><p>${total === max ? "Tudo certo!" : `Escolha mais ${max - total} de ${max}`}</p><div class="progress ${total === max ? "full" : ""}"><i style="width:${Math.min(100, (total / max) * 100)}%"></i></div></div>` : html`<p class="counter" style="text-align:left">Escolha a quantidade primeiro.</p>`}
       <div class="units-list">
         ${flavorsOf(idx, p.id).map((f) => {
           const v = S.units[f.id] || 0;
@@ -396,7 +397,7 @@ function openPicker(target, replaceIndex) {
       const already = current.includes(f.id) && current[replaceIndex] !== f.id;
       return html`<button type="button" class="pick" data-pick="${f.id}" aria-disabled="${unavailable || already}">
         <img src="${thumbUrl(f.image)}" alt="" loading="lazy">
-        <span><strong>${f.name}${f.tier === "especial" ? " ⭐" : ""}</strong><small>${already ? "Já escolhido" : f.description}</small></span>
+        <span><strong>${f.name}${f.tier === "especial" ? html` <span class="mk">especial</span>` : ""}</strong><small>${already ? "Já escolhido" : f.description}</small></span>
         <span class="pp">${priceLabel(f)}</span>
       </button>`;
     }) : html`<p class="empty">Nenhum sabor encontrado.</p>`);
@@ -404,7 +405,7 @@ function openPicker(target, replaceIndex) {
   setHTML(panel, html`<div class="picker-head">
       <div class="row"><button type="button" class="round-btn" data-back aria-label="Voltar">←</button><h3>Escolha ${replaceIndex >= 0 ? "o novo sabor" : "um sabor"}</h3></div>
       <label class="search" style="width:100%"><span class="sr-only">Buscar sabor</span><input type="search" placeholder="Buscar: calabresa, frango, chocolate…" id="pickSearch" autocomplete="off"></label>
-      ${tiers.size > 1 ? html`<div class="chips" style="margin:0"><button type="button" class="chip" data-tier="" aria-pressed="true">Todos</button><button type="button" class="chip" data-tier="tradicional" aria-pressed="false">Tradicionais</button><button type="button" class="chip" data-tier="especial" aria-pressed="false">Especiais ⭐</button></div>` : ""}
+      ${tiers.size > 1 ? html`<div class="chips" style="margin:0"><button type="button" class="chip" data-tier="" aria-pressed="true">Todos</button><button type="button" class="chip" data-tier="tradicional" aria-pressed="false">Tradicionais</button><button type="button" class="chip" data-tier="especial" aria-pressed="false">Especiais</button></div>` : ""}
     </div>
     <div class="picker-list"></div>`);
   dlg().appendChild(panel);
@@ -441,7 +442,7 @@ function submit(btn) {
   const img = $("#pdHeroImg");
   onAdd?.(sel, { editKey: S.editKey });
   flyToCart(img?.currentSrc || img?.src, btn);
-  toast(S.editKey ? "Item atualizado 👍" : `${r.title} no carrinho! 🍕`, "ok");
+  toast(S.editKey ? "Item atualizado" : `${r.title} no carrinho!`, "ok");
   closeLayer(layer());
 }
 

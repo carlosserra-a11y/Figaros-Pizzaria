@@ -5,13 +5,14 @@ import { openLayer, isOpen } from "./dialog.js";
 import { cart } from "./cart.js";
 import { ORDER_STATUS } from "../shared/pricing.js";
 import { toast } from "./fx.js";
+import { icon } from "./icons.js";
 
 const KEY = "fg_orders";
 let pollTimer = null;
 let viewing = null;
 let idx = null;
-const STEPS_DELIVERY = [["novo", "📥", "Pedido recebido"], ["confirmado", "👍", "Confirmado"], ["preparo", "🔥", "No forno"], ["saiu", "🛵", "Saiu para entrega"], ["entregue", "🎉", "Entregue"]];
-const STEPS_PICKUP = [["novo", "📥", "Pedido recebido"], ["confirmado", "👍", "Confirmado"], ["preparo", "🔥", "No forno"], ["pronto", "🛍️", "Pronto para retirar"], ["entregue", "🎉", "Retirado"]];
+const STEPS_DELIVERY = [["novo", "receipt", "Pedido recebido"], ["confirmado", "checkCircle", "Confirmado"], ["preparo", "flame", "No forno"], ["saiu", "scooter", "Saiu para entrega"], ["entregue", "house", "Entregue"]];
+const STEPS_PICKUP = [["novo", "receipt", "Pedido recebido"], ["confirmado", "checkCircle", "Confirmado"], ["preparo", "flame", "No forno"], ["pronto", "bag", "Pronto para retirar"], ["entregue", "checkCircle", "Retirado"]];
 
 export const history = () => storage.get(KEY, []).filter((o) => o && o.code).slice(0, 30);
 
@@ -97,13 +98,13 @@ async function renderTracking(code, silent = false) {
   setHTML(drawer, html`
     <div class="drawer-head"><h2 id="ordersTitle">Pedido #${o.code}</h2><button type="button" class="icon-btn" data-close aria-label="Fechar">×</button></div>
     <div class="drawer-body">
-      <p style="font-weight:800">Olá, ${o.customerFirstName}! ${o.status === "cancelado" ? "Este pedido foi cancelado. Fale com a gente no WhatsApp se precisar." : o.status === "entregue" ? "Bom apetite! 🍕" : "Acompanhe aqui — a página atualiza sozinha."}</p>
+      <p style="font-weight:800">Olá, ${o.customerFirstName}! ${o.status === "cancelado" ? "Este pedido foi cancelado. Fale com a gente no WhatsApp se precisar." : o.status === "entregue" ? "Bom apetite!" : "Acompanhe aqui — a página atualiza sozinha."}</p>
       ${o.status === "cancelado" ? html`<p class="st cancelado" style="margin:12px 0">Cancelado</p>` : html`<div class="timeline">
         ${steps.map(([s, ico, label]) => {
           const st = ORDER_STATUS[s].step;
           const cls = st < cur || (st === cur && s === "entregue") ? "done" : st === cur ? "now" : "todo";
           const at = eventAt(s);
-          return html`<div class="tl ${cls}"><span class="b">${cls === "done" ? "✓" : ico}</span><div><strong>${label}</strong>${at ? html`<small>${fmtDateTime(at)}</small>` : ""}</div></div>`;
+          return html`<div class="tl ${cls}"><span class="b">${cls === "done" ? icon("check") : icon(ico)}</span><div><strong>${label}</strong>${at ? html`<small>${fmtDateTime(at)}</small>` : ""}</div></div>`;
         })}
       </div>`}
       <div class="summary">
@@ -133,6 +134,6 @@ $("#ordersDrawer").addEventListener("click", (e) => {
       const p = idx && cart.priced(sel);
       if (p && p.ok) { cart.add(sel); ok++; } else fail++;
     }
-    toast(fail ? `${ok} item(ns) adicionados — ${fail} não estão mais disponíveis.` : "Itens adicionados ao carrinho! 🛒", fail ? "" : "ok", 3600);
+    toast(fail ? `${ok} item(ns) adicionados — ${fail} não estão mais disponíveis.` : "Itens adicionados ao carrinho!", fail ? "" : "ok", 3600);
   }
 });

@@ -27,7 +27,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Nunito:wght@400..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Caveat:wght@600..700&family=Nunito:wght@400..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/site.css">
   <link rel="modulepreload" href="js/shared/pricing.js">
 
@@ -114,7 +114,7 @@
               Pedir agora
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5l7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6L13 5Z"/></svg>
             </a>
-            <button class="btn btn-ghost btn-lg" type="button" id="heroBuildBtn">🍕 Montar minha pizza</button>
+            <button class="btn btn-ghost btn-lg" type="button" id="heroBuildBtn"><span class="ico-slot" data-icon="slice"></span>Montar minha pizza</button>
           </div>
           <ul class="hero-trust">
             <li id="heroRating" hidden></li>
@@ -140,6 +140,10 @@
             <img class="seal-logo" src="assets/img/logo-256.webp" alt="" width="150" height="150">
           </div>
           <div class="floaters" id="floaters"></div>
+          <p class="hero-hint hand">
+            <svg class="doodle" viewBox="0 0 70 46" aria-hidden="true"><path d="M6 8C24 2 46 10 56 34"/><path d="M44 29l12 6 3-12"/></svg>
+            <span>arraste pra girar,<br>toque pra puxar uma fatia</span>
+          </p>
           <div class="hero-tag" data-depth="-0.3">
             <strong>Borda + refri</strong>
             <span>inclusos em toda pizza salgada</span>
@@ -159,7 +163,7 @@
         <div class="section-head">
           <div>
             <p class="eyebrow"><span class="eyebrow-line"></span><span id="highlightsEyebrow">Os queridinhos da casa</span></p>
-            <h2 class="section-title" id="destaquesTitle" data-split>Destaques</h2>
+            <h2 class="section-title" id="destaquesTitle" data-split data-swash="green">Destaques</h2>
           </div>
           <div class="carousel-nav">
             <button class="round-btn" type="button" data-scroll="-1" aria-label="Anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg></button>
@@ -176,7 +180,7 @@
         <div class="section-head">
           <div>
             <p class="eyebrow"><span class="eyebrow-line"></span>Cardápio completo</p>
-            <h2 class="section-title" id="cardapioTitle" data-split>Monte seu pedido</h2>
+            <h2 class="section-title" id="cardapioTitle" data-split data-swash="red">O que vai ser hoje?</h2>
           </div>
           <label class="search" for="searchInput">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 0 1 6.3 12.9l5.4 5.4-1.4 1.4-5.4-5.4A8 8 0 1 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"/></svg>
@@ -209,6 +213,7 @@
           <div class="box-stage" id="box3d">
             <img class="box-fallback" src="assets/img/chef.webp" alt="" width="320" height="320" loading="lazy">
             <p class="box-caption" aria-hidden="true">Role a página para abrir a caixa</p>
+            <p class="box-note hand" aria-hidden="true">sai quentinha!</p>
           </div>
           <div class="steps-copy">
             <p class="eyebrow"><span class="eyebrow-line"></span>Simples assim</p>
@@ -252,16 +257,16 @@
           <img class="about-logo" src="assets/img/chef.webp" alt="" width="120" height="120" loading="lazy" data-depth="-0.3">
         </div>
         <div class="about-copy reveal">
-          <p class="eyebrow light"><span class="eyebrow-line"></span>Feita com carinho desde sempre</p>
-          <h2 class="section-title light" id="sobreTitle" data-split>Tradição de pizzaria, no ritmo da sua casa.</h2>
-          <p class="lead">A Figaro's nasceu em Palhoça com uma missão simples: servir pizzas generosas, recheadas de verdade, com atendimento de quem gosta do que faz. No salão você encontra <strong>rodízio de pizzas</strong> e <strong>buffet completo no almoço</strong> — e a mesma pizza vai quentinha até a sua porta.</p>
+          <p class="eyebrow light"><span class="eyebrow-line"></span>Ponte do Imaruim · Palhoça</p>
+          <h2 class="section-title light" id="sobreTitle" data-split data-swash="gold">Pizzaria de bairro, do jeito que tem que ser.</h2>
+          <p class="lead">Pizza bem recheada, com borda de requeijão e refrigerante já no preço. No salão tem <strong>rodízio de pizzas</strong> e, no almoço, <strong>buffet completo</strong>. Em casa é a mesma pizza — só que chegando quentinha na sua porta.</p>
           <ul class="about-points" data-stagger>
-            <li><span>🍕</span>Pizzas bem recheadas</li>
-            <li><span>🧀</span>Borda de requeijão inclusa</li>
-            <li><span>🥤</span>Refri incluso nas salgadas</li>
-            <li><span>🍫</span>Pizzas e calzones doces</li>
-            <li><span>🍝</span>Lasanhas artesanais</li>
-            <li><span>🍽️</span>Rodízio e buffet no salão</li>
+            <li><span class="ico-slot" data-icon="slice"></span>Pizzas bem recheadas</li>
+            <li><span class="ico-slot" data-icon="cheese"></span>Borda de requeijão inclusa</li>
+            <li><span class="ico-slot" data-icon="soda"></span>Refri incluso nas salgadas</li>
+            <li><span class="ico-slot" data-icon="choc"></span>Pizzas e calzones doces</li>
+            <li><span class="ico-slot" data-icon="lasagna"></span>Lasanhas artesanais</li>
+            <li><span class="ico-slot" data-icon="plate"></span>Rodízio e buffet no salão</li>
           </ul>
           <p class="lunch" id="lunchInfo"></p>
         </div>
@@ -287,29 +292,29 @@
       <div class="container contact-grid">
         <div class="contact-card reveal">
           <p class="eyebrow"><span class="eyebrow-line"></span>Venha nos visitar</p>
-          <h2 class="section-title" id="contatoTitle" data-split>Onde estamos</h2>
+          <h2 class="section-title" id="contatoTitle" data-split data-swash="red">Onde estamos</h2>
           <ul class="contact-list" data-stagger>
             <li>
-              <span class="ci">📍</span>
+              <span class="ci ico-slot" data-icon="pin"></span>
               <div><strong>Endereço</strong><p id="storeAddress">Av. Elza Lucchi, 1277 – Ponte do Imaruim, Palhoça – SC, 88130-600</p></div>
             </li>
             <li>
-              <span class="ci">📞</span>
+              <span class="ci ico-slot" data-icon="phone"></span>
               <div><strong>Telefone / WhatsApp</strong><p><a id="storePhone" href="tel:+5548933410102">(48) 93341-0102</a></p></div>
             </li>
             <li>
-              <span class="ci">🕒</span>
+              <span class="ci ico-slot" data-icon="clock"></span>
               <div><strong>Horários da pizzaria</strong><table class="hours" id="hoursTable"><tbody></tbody></table></div>
             </li>
           </ul>
           <div class="contact-ctas">
-            <a class="btn btn-primary" id="directionsBtn" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&amp;destination=Figaro%27s%20Pizzaria%2C%20Av.%20Elza%20Lucchi%2C%201277%20-%20Palho%C3%A7a%2C%20SC">🧭 Como chegar</a>
+            <a class="btn btn-primary" id="directionsBtn" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&amp;destination=Figaro%27s%20Pizzaria%2C%20Av.%20Elza%20Lucchi%2C%201277%20-%20Palho%C3%A7a%2C%20SC"><span class="ico-slot" data-icon="route"></span>Como chegar</a>
             <a class="btn btn-whats" id="whatsBtn" target="_blank" rel="noopener noreferrer" href="https://wa.me/5548933410102">WhatsApp</a>
           </div>
         </div>
         <div class="map-frame reveal">
           <button type="button" class="map-placeholder" id="mapLoad">
-            <span>🗺️</span>
+            <span class="ico-slot big" data-icon="map"></span>
             <strong>Ver no mapa</strong>
             <small>Carrega o Google Maps</small>
           </button>

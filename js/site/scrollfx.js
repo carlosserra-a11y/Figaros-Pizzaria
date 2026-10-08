@@ -4,6 +4,7 @@
    - parallax por camadas ([data-depth]) com medidas em cache
    - faixa de sabores que acelera/inclina com a velocidade da rolagem
    - "Como pedir": a caixa abre e os passos acendem conforme a rolagem
+   - traço de molho desenhado à mão sob os títulos, pintado pela rolagem
    - cartões que entram em 3D quando aparecem na tela
    Nada aqui lê o layout a cada quadro: as medidas só mudam em resize.
    ============================================================ */
@@ -13,6 +14,7 @@ const clamp01 = (v) => Math.max(0, Math.min(1, v));
 const scrollTimeline = typeof CSS !== "undefined" && CSS.supports?.("animation-timeline: scroll()");
 
 const depthEls = [];
+const swashes = []; // { path, len, top, last }
 let bar = null, maxScroll = 1, lastY = -1, dirty = true;
 let marquee = null;
 const story = { el: null, pin: null, steps: [], top: 0, h: 1, pinned: false, p: 0, active: -1 };
@@ -24,6 +26,7 @@ function measure() {
     d.top = r.top + window.scrollY;
     d.h = r.height;
   }
+  for (const w of swashes) w.top = w.svg.getBoundingClientRect().top + window.scrollY;
   maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
   if (story.el) {
     const r = story.el.getBoundingClientRect();
@@ -66,6 +69,18 @@ function updateStory(y, vh) {
 /** Progresso (0–1) da história da caixa — usado pelo 3D. */
 export const getStoryProgress = () => story.p;
 
+/** O traço aparece enquanto o título sobe do pé da tela até perto do meio. */
+function drawSwashes(y, vh) {
+  for (const w of swashes) {
+    const top = w.top - y;
+    const p = motion.reduced ? 1 : clamp01((vh * 0.96 - top) / (vh * 0.38));
+    if (Math.abs(p - w.last) < 0.004) continue;
+    w.last = p;
+    w.path.style.strokeDashoffset = (w.len * (1 - p)).toFixed(1);
+    w.svg.classList.toggle("done", p >= 0.999);
+  }
+}
+
 function update(f) {
   const y = f.y;
   if (y !== lastY || dirty) {
@@ -73,6 +88,7 @@ function update(f) {
     dirty = false;
     if (!scrollTimeline && bar) bar.style.transform = `scaleX(${Math.min(1, y / maxScroll).toFixed(4)})`;
     if (!motion.reduced) parallax(y, f.vh);
+    drawSwashes(y, f.vh);
     updateStory(y, f.vh);
   }
   if (marquee && marquee.visible && !motion.reduced) {
@@ -103,6 +119,22 @@ export function initScrollFx() {
     new IntersectionObserver(([e]) => { marquee.visible = e.isIntersecting; if (e.isIntersecting) { measureTrack(); ticker.wake(); } }).observe(track.parentElement);
     if ("ResizeObserver" in window) new ResizeObserver(measureTrack).observe(track);
   }
+
+  // traço de molho sob os títulos marcados com data-swash
+  const SWASH = "M4 17C40 6 70 22 108 13s62-9 98 1 60 8 90-5";
+  document.querySelectorAll("[data-swash]").forEach((title) => {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 300 26");
+    svg.setAttribute("class", `swash ${title.dataset.swash}`);
+    svg.setAttribute("aria-hidden", "true");
+    svg.innerHTML = `<path d="${SWASH}"/><circle cx="292" cy="20" r="2.4"/><circle cx="283" cy="23" r="1.6"/>`;
+    title.after(svg);
+    const path = svg.querySelector("path");
+    const len = Math.ceil(path.getTotalLength?.() || 320);
+    path.style.strokeDasharray = `${len}`;
+    path.style.strokeDashoffset = `${len}`;
+    swashes.push({ svg, path, len, top: 0, last: -1 });
+  });
 
   story.el = document.getElementById("como-funciona");
   story.pin = story.el?.querySelector(".steps-pin") || null;

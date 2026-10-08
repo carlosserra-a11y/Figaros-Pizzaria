@@ -1,7 +1,10 @@
 /* ============================================================
    Fundo 3D da página: ingredientes flutuando em profundidade.
-   - a câmera desce junto com a rolagem (parallax de verdade) e os
-     ingredientes giram conforme a velocidade da rolagem
+   - a câmera desce junto com a rolagem (parallax de verdade)
+   - cada ingrediente GIRA conforme a página desce (rolou, girou) e, na
+     rolagem rápida, fica um pouco para trás e se afasta para as laterais,
+     voltando com mola — como se boiasse
+   - nada nasce atrás do título do topo: eles aparecem a partir da 2ª tela
    - o cursor (ou o dedo) afasta os ingredientes próximos, que voltam com mola
    - clique/toque numa área vazia solta uma nuvem de farinha
    - farinha no ar animada na GPU (nada recalculado na CPU por quadro)
@@ -85,12 +88,15 @@ export function createBackgroundScene({ canvas, tier, covers = [], onReady, onFa
     worldPerPx = (2 * Math.tan((FOV * Math.PI) / 360) * CAM_Z) / viewH;
     const halfW0 = (viewW / 2) * worldPerPx, halfH0 = (viewH / 2) * worldPerPx;
     const travel = (docH - viewH) * worldPerPx; // quanto a câmera desce do topo ao fim da página
+    const skip = halfH0 * 1.9; // a 1ª tela (título do topo) fica livre
+    const small = viewW < 700;
     for (const it of items) {
       const depthScale = (CAM_Z - it.z) / CAM_Z; // planos mais distantes mostram uma área maior
       // laterais: deixa o centro livre para o texto; objetos mais próximos (maiores) ficam ainda mais nas bordas
-      const edge = viewW < 700 ? 0.86 : it.z > 0 ? 0.8 : 0.66;
+      const edge = small ? 0.74 : it.z > 0 ? 0.8 : 0.66;
       it.x = it.side * halfW0 * depthScale * (edge + it.xr * (1 - edge) * 0.95);
-      it.y = halfH0 * 0.8 - it.lane * (travel + halfH0 * 1.6);
+      it.y = halfH0 * 0.8 - skip - it.lane * Math.max(0, travel + halfH0 * 1.6 - skip);
+      it.size = it.scale * (small ? 0.82 : 1);
       it.reach = 150 * worldPerPx * depthScale; // raio de influência do cursor (~150 px na tela)
     }
     if (flourMat) {
@@ -186,6 +192,7 @@ export function createBackgroundScene({ canvas, tier, covers = [], onReady, onFa
       if (covered) return true;
 
       const boost = f.vel * 0.0009;
+      const vel = Math.max(-2600, Math.min(2600, f.vel));
       let springs = 0;
       const k = 7, c = 3.6, push = 9;
       for (const it of items) {
@@ -194,6 +201,12 @@ export function createBackgroundScene({ canvas, tier, covers = [], onReady, onFa
         it.rot.y += (it.spin.y + boost + it.kick * 0.6) * dt;
         it.rot.z += it.spin.z * dt;
         it.kick = damp(it.kick, 0, 2, dt);
+        // rolagem rápida: fica um pouco para trás e é "soprado" para a lateral; parou, volta com mola
+        const near = 0.55 + Math.max(0, it.z + 7.5) / 10; // mais perto da câmera = reage mais
+        const lagT = -vel * 0.00034 * near, swayT = Math.abs(vel) * 0.00016 * near * it.side;
+        it.lagV += ((lagT - it.lag) * 38 - it.lagV * 7.5) * dt;
+        it.lag += it.lagV * dt;
+        it.sway = damp(it.sway, swayT, Math.abs(swayT) > Math.abs(it.sway) ? 6 : 1.6, dt);
         // cursor afasta (mola puxa de volta)
         if (pointerLive) {
           const [px, py] = pointerWorld(it.z);
@@ -204,12 +217,14 @@ export function createBackgroundScene({ canvas, tier, covers = [], onReady, onFa
         const fr = Math.exp(-c * dt);
         it.vx *= fr; it.vy *= fr;
         it.ox += it.vx * dt; it.oy += it.vy * dt;
-        springs = Math.max(springs, Math.abs(it.vx) + Math.abs(it.vy) + Math.abs(it.ox) * 0.2 + Math.abs(it.oy) * 0.2);
+        springs = Math.max(springs, Math.abs(it.vx) + Math.abs(it.vy) + Math.abs(it.ox) * 0.2 + Math.abs(it.oy) * 0.2 + Math.abs(it.lagV) * 0.5 + Math.abs(it.sway) * 0.3);
         const bob = Math.sin(time * 0.6 + it.bob) * 0.12;
-        dummy.position.set(it.x + it.ox, it.y + it.oy + bob, it.z);
-        q.setFromEuler(e3.set(it.rot.x, it.rot.y, it.rot.z));
+        dummy.position.set(it.x + it.ox + it.sway, it.y + it.oy + bob + it.lag, it.z);
+        // giro ligado à posição da rolagem: cada pixel rolado vira um pouquinho de rotação
+        const sr = y * it.scrollSpin;
+        q.setFromEuler(e3.set(it.rot.x + sr * 0.6, it.rot.y + sr, it.rot.z + sr * 0.35));
         dummy.quaternion.copy(q);
-        dummy.scale.setScalar(it.scale);
+        dummy.scale.setScalar(it.size || it.scale);
         dummy.updateMatrix();
         it.mesh.setMatrixAt(it.i, dummy.matrix);
       }
@@ -218,7 +233,7 @@ export function createBackgroundScene({ canvas, tier, covers = [], onReady, onFa
 
       flourMat.uniforms.uTime.value = time;
       flourMat.uniforms.uCamY.value = st.y;
-      flourMat.uniforms.uDrift.value = f.vel * 0.00004;
+      flourMat.uniforms.uDrift.value = vel * 0.00012;
 
       if (st.burstT < 1.6) {
         st.burstT += dt;
@@ -270,7 +285,8 @@ export function createBackgroundScene({ canvas, tier, covers = [], onReady, onFa
           spin: new Vector3((Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.4),
           bob: Math.random() * Math.PI * 2,
           xr: Math.random(),
-          x: 0, y: 0, ox: 0, oy: 0, vx: 0, vy: 0, kick: 0, reach: 1,
+          scrollSpin: (Math.random() < 0.5 ? -1 : 1) * (0.0008 + Math.random() * 0.0014), // rad por pixel rolado
+          x: 0, y: 0, ox: 0, oy: 0, vx: 0, vy: 0, kick: 0, reach: 1, lag: 0, lagV: 0, sway: 0, size: 0,
         });
       }
     }

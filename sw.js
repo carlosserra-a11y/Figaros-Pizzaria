@@ -6,7 +6,7 @@
    - API, painel e qualquer outro domínio: não passam por aqui
    Para invalidar tudo, troque VERSION.
    ============================================================ */
-const VERSION = "fg-2026-10-07";
+const VERSION = "fg-2026-10-08";
 const PAGES = `${VERSION}-pages`;
 const IMAGES = `${VERSION}-images`;
 

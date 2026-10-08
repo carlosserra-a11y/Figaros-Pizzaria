@@ -5,7 +5,7 @@ import { html, $, $$, setHTML, brl, starsHtml, icons } from "./util.js";
 import { loadMenu, state as apiState } from "./api.js";
 import { indexMenu, storeStatus, priceItem } from "../shared/pricing.js";
 import { cart } from "./cart.js";
-import { initMenu } from "./menu-view.js";
+import { initMenu, sizeOf } from "./menu-view.js";
 import { initBuilder, openBuilder } from "./builder.js";
 import { initCheckout, openCart, renderCartBadge, onStoreStatusChange } from "./checkout.js";
 import { initOrders } from "./orders.js";
@@ -13,13 +13,26 @@ import { initBackgroundFx, initFloaters, initMagnetic, observeReveal, flyToCart,
 import { closeLayer } from "./dialog.js";
 import { initScrollFx, getStoryProgress } from "./scrollfx.js";
 import { ticker, initSmoothScroll, scrollToTarget, initFpsMeter } from "./motion.js";
+import { icon } from "./icons.js";
 
 const PARAMS = new URLSearchParams(location.search);
 
 const DAYS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
+/** Ícones marcados no HTML (data-icon) — desenhados em traço, iguais em qualquer aparelho. */
+function hydrateIcons(root = document) {
+  root.querySelectorAll("[data-icon]").forEach((el) => {
+    el.innerHTML = String(icon(el.dataset.icon));
+    el.removeAttribute("data-icon");
+  });
+}
+
 /* ---------- Header, menu mobile e navegação ativa ---------- */
 function initChrome() {
+  hydrateIcons();
+  // a dica "arraste pra girar" some depois que a pessoa mexe na pizza
+  const hv = $("#heroVisual");
+  hv?.addEventListener("pointerdown", () => hv.classList.add("touched"), { once: true });
   const header = $("#siteHeader");
   const onScroll = () => header.classList.toggle("scrolled", window.scrollY > 8);
   onScroll();
@@ -124,7 +137,7 @@ function renderStore(menu) {
     $("#directionsBtn").href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(s.mapsQuery)}`;
     $("#mapLoad").dataset.q = s.mapsQuery;
   }
-  if (s.lunchInfo) $("#lunchInfo").textContent = `🍽️ ${s.lunchInfo}`;
+  if (s.lunchInfo) setHTML($("#lunchInfo"), html`${icon("plate")}<span>${s.lunchInfo}</span>`);
   if (s.tagline) $("#footerTagline").textContent = `${s.tagline}. Delivery, retirada, rodízio e buffet.`;
   if (Array.isArray(s.payments) && s.payments.length) setHTML($("#payTags"), s.payments.map((p) => html`<li>${p}</li>`));
   const socials = [];
@@ -171,7 +184,7 @@ async function start() {
   try {
     menu = await loadMenu();
   } catch {
-    setHTML($("#menuBody"), html`<div class="empty"><span class="big">😕</span>Não conseguimos carregar o cardápio agora.<br><button type="button" class="btn btn-primary" style="margin-top:14px" id="retryMenu">Tentar de novo</button></div>`);
+    setHTML($("#menuBody"), html`<div class="empty">${icon("oven", { cls: "big" })}Não conseguimos carregar o cardápio agora.<br><button type="button" class="btn btn-primary" style="margin-top:14px" id="retryMenu">Tentar de novo</button></div>`);
     $("#retryMenu").addEventListener("click", () => location.reload());
     return;
   }
@@ -180,8 +193,8 @@ async function start() {
   renderStore(menu);
   renderMarquee(menu);
 
-  const quickAdd = (productId, cardEl) => {
-    const sel = { productId, qty: 1 };
+  // "+" do cardápio: bebida, ou pizza já no tamanho escolhido (com a borda que vem inclusa)
+  const quickAdd = (sel, cardEl) => {
     const r = priceItem(idx, sel);
     if (!r.ok) return toast(r.errors[0], "err");
     cart.add(sel);
@@ -199,7 +212,7 @@ async function start() {
 
   $("#heroBuildBtn").addEventListener("click", () => {
     const pizza = [...idx.products.values()].find((p) => p.kind === "pizza" && (p.sizes || []).some((s) => (s.maxFlavors || 1) > 1));
-    if (pizza) openBuilder({ productId: pizza.id });
+    if (pizza) openBuilder({ productId: pizza.id, sizeId: sizeOf(pizza)?.id });
   });
 
   // Deep links: #pedido/CODIGO abre o acompanhamento

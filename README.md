@@ -5,6 +5,7 @@ Site oficial da **Figaro's Pizzaria** (Av. Elza Lucchi, 1277 – Ponte do Imarui
 - **Cardápio completo e real**: os 57 sabores salgados, 14 pizzas doces, 7 calzones doces, lasanhas, esfihas, combos e bebidas, com os mesmos preços e regras do cardápio da CityFoods (outubro/2026).
 - **Fotos reais** de pizza em todos os itens (Flickr / Wikimedia Commons, licenças livres — veja `creditos.html`).
 - **Montador de pizza**: tamanho → até 3 sabores (com a pizza desenhada em fatias) → borda → observações. Preço de pizza com vários sabores = média dos sabores (regra configurável).
+- **Cardápio explicado e curto**: uma categoria por vez (abas). Nas pizzas, a pessoa escolhe o tamanho uma vez (pizzas desenhadas em escala, de 25 a 40 cm) e um quadro mostra o que vem incluso, a regra do meio a meio e o preço das outras bordas; cada grupo (tradicionais / especiais) tem a tabela de preços uma vez só, em vez de repetir em cada sabor. Lista compacta com os mais pedidos primeiro, filtros, "ver mais", e o "+" já adiciona no tamanho escolhido. No computador, a foto do sabor aparece ao passar o mouse.
 - **Combos** com escolha de sabores, acréscimo automático para sabor especial e troca de refrigerante.
 - **Carrinho** salvo no aparelho, sugestão de bebida, pedido mínimo, editar item.
 - **Checkout** com busca de endereço pelo CEP, taxa por bairro, troco, e envio do resumo para o WhatsApp da loja.
@@ -13,7 +14,7 @@ Site oficial da **Figaro's Pizzaria** (Av. Elza Lucchi, 1277 – Ponte do Imarui
 - **Painel do desenvolvedor** (`/admin/`) com usuário e senha para cadastrar novos sabores, pizzas, produtos e bebidas, mudar preços, horários, taxa de entrega e ver os pedidos chegando (com aviso sonoro).
 - **Modelos 3D** (three.js, feitos em código, sem downloads extras):
   - **pizza fatiada no topo** com a foto real por cima, tábua de madeira e vapor — as fatias caem no lugar ao abrir a página; arrastar gira a pizza, clicar puxa uma fatia com fios de queijo; ao rolar, as fatias se abrem em leque;
-  - **ingredientes flutuando no fundo** em várias profundidades (parallax de câmera), girando com a velocidade da rolagem; o cursor afasta os ingredientes (que voltam com mola) e um clique numa área vazia solta uma nuvem de farinha;
+  - **ingredientes flutuando no fundo** em várias profundidades (parallax de câmera) que **giram conforme a página rola**, ficam um pouco para trás na rolagem rápida e voltam com mola; o cursor afasta os ingredientes (que voltam com mola) e um clique numa área vazia solta uma nuvem de farinha;
   - **caixa de pizza da Figaro's** com a logo impressa, contada pela rolagem em "Como pedir": no computador a seção fica presa na tela enquanto a tampa abre, a pizza sobe e os passos 1-2-3 acendem.
 - Rolagem suave (Lenis) com mouse/trackpad, títulos que entram palavra por palavra, listas em cascata, abas do cardápio com indicador deslizante, cartões que entram em 3D, "voar para o carrinho" com rastro, brasas, confete.
 - Sem WebGL, com "reduzir movimento" ou em caso de erro, o site cai sozinho para a versão 2D. Tudo roda num único laço de animação que dorme quando nada se mexe, as cenas pausam fora da tela e com modal aberto, e a qualidade se ajusta sozinha medindo os quadros. Detalhes e medições em [`PERF.md`](PERF.md).
@@ -123,6 +124,7 @@ server/security.js      senhas, sessões, limites de tentativas, cabeçalhos de 
 server/validate.js      validação de tudo que chega na API
 tests/                  testes automáticos (npm test)
 js/site/motion.js       laço único de animação, rolagem suave (Lenis), "reduzir movimento"
+js/site/icons.js        ícones desenhados em traço (no lugar dos emojis)
 js/site/3d-worker.js    worker das texturas 3D (gerado a partir de src/3d com npm run build:3d)
 js/vendor/lenis.mjs     Lenis (rolagem suave, MIT) — gerado com npm run build:vendor
 sw.js                   service worker: imagens em cache e site abrindo sem internet

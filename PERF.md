@@ -1,5 +1,17 @@
 # Desempenho e qualidade visual — antes e depois
 
+## Rodada 2 — cardápio mais curto e explicado
+
+| Medida | Antes | Depois |
+|---|---|---|
+| Altura da página (computador, 1280 px) | 18.249 px | 8.115 px (**−56%**) |
+| Altura só do cardápio | 12.460 px (106 cartões grandes empilhados) | 2.192 px (**−82%**), uma categoria por vez |
+| Preço das pizzas | "a partir de R$ 61,90" repetido em cada cartão | escolhe o tamanho uma vez; a tabela de cada grupo mostra o preço exato |
+| Ícones | emojis (mudam em cada aparelho; o de esfiha nem aparecia no Windows) | ícones desenhados em traço, iguais em qualquer aparelho |
+| Fundo 3D | girava só com a velocidade da rolagem | gira conforme a página desce, fica para trás na rolagem rápida e volta com mola |
+
+## Rodada 1 — 3D, rolagem e leveza
+
 Medições feitas no mesmo computador (Chrome, placa de vídeo Radeon RX 570, 12 núcleos, tela de 75 Hz).
 "Antes" = site publicado no GitHub Pages em 07/10/2026; "depois" = esta versão rodando localmente.
 
